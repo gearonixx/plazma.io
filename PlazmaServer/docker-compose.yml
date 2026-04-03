@@ -1,5 +1,3 @@
-version: "2.3"
-
 services:
     scylladb:
       container_name: scylla
@@ -15,6 +13,7 @@ services:
 
 
     scylla-init:
+      container_name: scylla-init
       image: scylladb/scylla:latest
       depends_on:
         - scylladb

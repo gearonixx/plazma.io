@@ -1,0 +1,16 @@
+__pycache__/
+build*/
+cmake-build-*/
+compile_commands.json
+Testing/
+
+.cache/
+.idea/
+.vscode/
+.cores/
+.ccache/
+.sixth/
+.DS_Store
+
+tdlib/
+cores/

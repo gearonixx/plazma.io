@@ -1,0 +1,9 @@
+worker-threads: 4
+worker-fs-threads: 2
+logger-level: debug
+
+is_testing: false
+
+server-port: 8080
+
+dbconnection: 'postgresql://realmedium_sample_user:password@localhost:5432/realmedium_db-1'

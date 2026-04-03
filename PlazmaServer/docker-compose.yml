@@ -1,0 +1,93 @@
+version: "2.3"
+
+services:
+    scylladb:
+      container_name: scylla
+      image: scylladb/scylla:latest
+      ports:
+        - 9042:9042
+        - 9160:9160
+      volumes:
+        - scylladata:/var/lib/scylla
+      command: --smp 1 --memory 750M
+      networks:
+        - scylla
+
+
+    scylla-init:
+      image: scylladb/scylla:latest
+      depends_on:
+        - scylladb
+      volumes:
+        - ./migrations:/migrations:ro
+      networks:
+        - scylla
+      entrypoint: ["/bin/bash", "-c"]
+      command:
+        - |
+          until cqlsh scylla 9042 -e "DESCRIBE KEYSPACES" > /dev/null 2>&1; do
+            echo "Waiting for ScyllaDB..."; sleep 2;
+          done
+          cqlsh scylla 9042 -f /migrations/001_init.cql
+          echo "Migration done."
+
+    minio:
+      container_name: minio
+      image: minio/minio:latest
+      ports:
+       - 9000:9000
+       - 9001:9001
+      volumes:
+       - miniodata:/data
+      environment:
+       - MINIO_ROOT_USER=minioadmin
+       - MINIO_ROOT_PASSWORD=minioadmin
+       - MINIO_DOMAIN=minio
+      command: server /data --console-address ":9001"
+      networks:
+        scylla:
+          aliases:
+            - plazma-videos.minio
+
+    plazma-server:
+        container_name: plazma-server
+        build: .
+        privileged: true
+        environment:
+          - POSTGRES_DB=realmedium_db-1
+          - POSTGRES_USER=user
+          - POSTGRES_PASSWORD=password
+          - PREFIX=${PREFIX:-~/.local}
+          - CC
+          - CCACHE_DIR=/realmedium/.ccache
+          - CCACHE_HASHDIR
+          - CCACHE_NOHASHDIR
+          - CCACHE_PREFIX
+          - CCACHE_SIZE
+          - CMAKE_OPTS
+          - CORES_DIR=/cores
+          - CXX
+          - MAKE_OPTS
+          - CMAKE_OPTIONS
+        volumes:
+          - .:/realmedium:rw
+          - ${TC_CORES_DIR:-./.cores}:/cores:rw
+        ports:
+          - 8080:8080
+          - 8086:8086
+        working_dir: /realmedium
+        entrypoint: ["/realmedium/tests/run_as_user.sh"]
+        command: ["tail", "-f", "/dev/null"]
+        depends_on:
+          - scylla-init
+          - minio
+        networks:
+          - scylla
+
+networks:
+    scylla:
+        driver: bridge
+
+volumes:
+  scylladata:
+  miniodata:

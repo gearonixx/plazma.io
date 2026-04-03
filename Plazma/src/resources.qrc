@@ -1,0 +1,15 @@
+<!DOCTYPE RCC>
+<RCC>
+    <qresource prefix="/">
+        <file>ui/main.qml</file>
+
+        <file>ui/Pages/PageStart.qml</file>
+        <file>ui/Pages/PageLogin.qml</file>
+
+        <file>ui/Controls/BasicButtonType.qml</file>
+
+        <file>ui/Modules/Style/PlazmaStyle.qml</file>
+        <file>ui/Modules/Style/qmldir</file>
+    </qresource>
+</RCC>
+

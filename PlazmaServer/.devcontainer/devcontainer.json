@@ -1,0 +1,14 @@
+{
+  "name": "realmedium",
+  "dockerComposeFile": "../docker-compose.yml",
+  "service": "realmedium-sample",
+  "workspaceFolder": "/realmedium",
+  "overrideCommand": true,
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "llvm-vs-code-extensions.vscode-clangd"
+      ]
+    }
+  }
+}

@@ -1,0 +1,5 @@
+<RCC>
+  <qresource prefix="/locales">
+    <file alias="ru.qm">@CMAKE_CURRENT_BINARY_DIR@/ru.qm</file>
+  </qresource>
+</RCC>

@@ -1,0 +1,62 @@
+openapi: "3.0.0"
+info:
+  title: realmedium
+  description: Telegram-native video sharing backend
+  version: "1.0.0"
+servers:
+  - url: "http://localhost:8080"
+    description: local
+
+paths:
+  /v1/auth/login:
+    post:
+      summary: Upsert Telegram user on login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TelegramLoginDTO'
+      responses:
+        '200':
+          description: User upserted successfully
+
+  /v1/videos/upload:
+    post:
+      summary: Upload a video file
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Video uploaded successfully
+        '400':
+          description: Missing or malformed multipart body
+
+components:
+  schemas:
+    TelegramLoginDTO:
+      type: object
+      additionalProperties: false
+      properties:
+        user_id:
+          type: integer
+          format: int64
+        username:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        phone_number:
+          type: string
+        is_premium:
+          type: boolean
+      required:
+        - user_id
+        - first_name
+        - phone_number
+        - is_premium

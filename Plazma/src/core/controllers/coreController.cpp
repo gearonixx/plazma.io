@@ -12,6 +12,7 @@
 #include "version.h"
 
 #include "../../models/user_model.h"
+#include "../../session.h"
 
 CoreController::CoreController(
     QQmlApplicationEngine* engine,
@@ -19,7 +20,7 @@ CoreController::CoreController(
     TelegramClient* client,
     QObject* parent
 )
-    : QObject(parent), settings_(settings), qmlEngine_(engine) {
+    : QObject(parent), settings_(std::move(settings)), qmlEngine_(engine) {
     initModels(client);
     initControllers();
 
@@ -42,6 +43,9 @@ void CoreController::initModels(TelegramClient* client) {
 
     userModel_.reset(new UserModel(client));
     qmlRegisterSingletonInstance<UserModel>(APPLICATION_ID, 1, 0, "UserModel", userModel_.data());
+
+    session_.reset(new Session());
+    qmlRegisterSingletonInstance<Session>(APPLICATION_ID, 1, 0, "Session", session_.data());
 
     language_model_.reset(new LanguageModel(settings_));
     qmlRegisterSingletonInstance<LanguageModel>(APPLICATION_ID, 1, 0, "LanguageModel", language_model_.data());
@@ -72,21 +76,10 @@ void CoreController::initSignalHandlers() {
 void CoreController::initAuthBindings() {
     connect(userModel_.data(), &UserModel::userChanged, this, [this]() {
         if (!userModel_->isLoaded()) return;
-        rpc_->call(
-            "/v1/auth/login",
-            QJsonObject{
-                {"user_id", userModel_->id()},
-                {"username", userModel_->username()},
-                {"first_name", userModel_->firstName()},
-                {"last_name", userModel_->lastName()},
-                {"phone_number", userModel_->phoneNumber()},
-                {"is_premium", userModel_->isPremium()},
-            },
-            HttpMethod::kPost
-        );
-    });
 
-    // video upload is now handled by FileDialog -> FileLoadTask -> RpcClient::uploadFile
+        session_->start(userModel_->me());
+        rpc_->loginUser(*session_);
+    });
 }
 
 void CoreController::setQmlRoot() const {

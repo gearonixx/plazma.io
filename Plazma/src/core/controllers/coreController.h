@@ -14,6 +14,7 @@
 #include "src/models/file_dialog_model.h"
 #include "src/models/user_model.h"
 #include "src/platform/file_dialog.h"
+#include "src/session.h"
 
 class CoreController : public QObject {
     Q_OBJECT;
@@ -58,6 +59,7 @@ private:
     QSharedPointer<AuthorizationCodeModel> authCodeModel_;
 
     QSharedPointer<UserModel> userModel_;
+    QSharedPointer<Session> session_;
 
     QScopedPointer<RpcClient> rpc_;
 

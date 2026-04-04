@@ -46,96 +46,21 @@ public:
           nam_(new QNetworkAccessManager(this)),
           file_loader_(std::make_unique<plazma::task_queue::TaskQueue>()) {}
 
-    void call(const QString& endpoint, const QJsonObject& body = {}, const HttpMethod& method = HttpMethod::kGet) {
-        Q_ASSERT(nam_ != nullptr);
-
-        QNetworkRequest req(QUrl(QString(kBaseUrl) + endpoint));
-        req.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-        req.setRawHeader("Connection", "close");
-
-        QByteArray data = QJsonDocument(body).toJson(QJsonDocument::Compact);
-        auto* reply = nam_->sendCustomRequest(req, toMethodString(method), data);
-
-        connect(reply, &QNetworkReply::finished, reply, &QObject::deleteLater);
-
-        qDebug() << "[RPC]" << toMethodString(method) << endpoint;
-    }
-
+    void call(const QString& endpoint, const QJsonObject& body = {}, const HttpMethod& method = HttpMethod::kGet);
+    void loginUser(const class Session& session);
     void uploadFile(
         const QString& endpoint,
         const QString& fieldName,
         const QString& filename,
         const QString& mime,
         const QByteArray& filedata
-    ) {
-        Q_ASSERT(nam_ != nullptr);
-
-        auto* multiPart = new QHttpMultiPart(QHttpMultiPart::FormDataType);
-
-        QHttpPart filePart;
-        filePart.setHeader(
-            QNetworkRequest::ContentTypeHeader, mime
-        );
-        filePart.setHeader(
-            QNetworkRequest::ContentDispositionHeader,
-            QStringLiteral("form-data; name=\"%1\"; filename=\"%2\"").arg(fieldName, filename)
-        );
-        filePart.setBody(filedata);
-        multiPart->append(filePart);
-
-        QNetworkRequest req(QUrl(QString(kBaseUrl) + endpoint));
-
-        auto* reply = nam_->post(req, multiPart);
-        multiPart->setParent(reply);
-
-        connect(reply, &QNetworkReply::finished, this, [reply]() {
-            if (reply->error() != QNetworkReply::NoError) {
-                qWarning() << "[RPC] upload failed:" << reply->errorString();
-            } else {
-                qDebug() << "[RPC] upload ok:" << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-            }
-            reply->deleteLater();
-        });
-
-        qDebug() << "[RPC] POST (multipart)" << endpoint << filename << filedata.size() << "bytes";
-    }
+    );
 
     plazma::task_queue::TaskQueue* fileLoader() const { return file_loader_.get(); }
 
-    // void call(const QString& method, const QJsonArray& params = {}) {
-    //     QJsonObject request;
-    //     request["jsonrpc"] = "2.0";
-    //     request["id"] = ++requestId_;
-    //     request["method"] = method;
-    //     request["params"] = params;
-    //
-    //     QNetworkRequest req(endpoint_);
-    //     req.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-    //     req.setRawHeader("Authorization", authHeader_.toUtf8());
-    //     req.setRawHeader("Connection", "close");
-    //
-    //     QByteArray body = QJsonDocument(request).toJson(QJsonDocument::Compact);
-    //     auto* reply = nam_->post(req, body);
-    //
-    //     connect(reply, &QNetworkReply::finished, this, [this, reply]() {
-    //         if (reply->error() == QNetworkReply::NoError) {
-    //             auto doc = QJsonDocument::fromJson(reply->readAll());
-    //             auto obj = doc.object();
-    //             if (obj.contains("error") && !obj["error"].isNull()) {
-    //                 emit rpcError(obj["error"].toObject()["message"].toString());
-    //             } else {
-    //                 emit rpcResponse(obj["result"]);
-    //             }
-    //         } else {
-    //             emit rpcError(reply->errorString());
-    //         }
-    //         reply->deleteLater();
-    //     });
-    // }
-
 signals:
-    void rpcResponse(QJsonValue result);
-    void rpcError(QString error);
+    void loginSuccess(QJsonObject user);
+    void loginError(int statusCode, QString error);
 
 private:
     static constexpr auto kBaseUrl = "http://localhost:8080";

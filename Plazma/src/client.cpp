@@ -69,10 +69,20 @@ void TelegramClient::process_update(td_api::object_ptr<td_api::Object> update) {
     dispatch(update, [this](td_api::updateAuthorizationState& update_authorization_state) {
         dispatch(
             update_authorization_state.authorization_state_,
-            [this](td_api::authorizationStateWaitTdlibParameters&) { send(request_builder_->setTdLibParameters()); },
-            [this](td_api::authorizationStateWaitPhoneNumber&) { emit phoneNumberRequired(); },
-            [this](td_api::authorizationStateWaitCode&) { emit authCodeRequired(); },
+            [this](td_api::authorizationStateWaitTdlibParameters&) {
+                qDebug() << "[AUTH] WaitTdlibParameters";
+                send(request_builder_->setTdLibParameters());
+            },
+            [this](td_api::authorizationStateWaitPhoneNumber&) {
+                qDebug() << "[AUTH] WaitPhoneNumber";
+                emit phoneNumberRequired();
+            },
+            [this](td_api::authorizationStateWaitCode&) {
+                qDebug() << "[AUTH] WaitCode";
+                emit authCodeRequired();
+            },
             [this](td_api::authorizationStateReady&) {
+                qDebug() << "[AUTH] Ready";
                 is_authorized_ = true;
                 send(request_builder_->getMe(), [this](ResponsePtr response) {
                     auto raw = td::td_api::move_object_as<td_api::user>(response);
@@ -92,13 +102,9 @@ void TelegramClient::pollForUpdates() {
     while (!QThread::currentThread()->isInterruptionRequested()) {
         td::ClientManager::Response response = client_manager_->receive(RECEIVE_TIMEOUT);
 
-        if (!response.object) {
-            qDebug() << "Received empty response";
-            continue;
-        }
+        if (!response.object) { continue; }
 
         if (isUnsolicitedUpdate(response)) {
-            qDebug() << "Received an update";
             process_update(std::move(response.object));
         } else {
             qDebug() << "Response for request" << response.request_id << ":" << td_api::to_string(response.object);

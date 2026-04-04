@@ -4,11 +4,11 @@
 #include <userver/server/handlers/http_handler_json_base.hpp>
 #include <userver/storages/scylla/component.hpp>
 
-namespace real_medium::handlers::users::ping {
+namespace real_medium::handlers::users::auth_login {
 
 class Handler final : public userver::server::handlers::HttpHandlerJsonBase {
 public:
-    static constexpr std::string_view kName = "handler-user-ping";
+    static constexpr std::string_view kName = "handler-auth-login";
 
     Handler(const userver::components::ComponentConfig& config,
             const userver::components::ComponentContext& context);
@@ -23,4 +23,4 @@ private:
     userver::storages::scylla::SessionPtr session_;
 };
 
-}  // namespace real_medium::handlers::users::ping
+}  // namespace real_medium::handlers::users::auth_login

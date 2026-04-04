@@ -28,6 +28,7 @@ services:
             echo "Waiting for ScyllaDB..."; sleep 2;
           done
           cqlsh scylla 9042 -f /migrations/001_init.cql
+          cqlsh scylla 9042 -f /migrations/002_add_user_fields.cql
           echo "Migration done."
 
     minio:

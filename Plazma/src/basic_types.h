@@ -12,3 +12,5 @@ using int64 = qint64;
 using uint64 = quint64;
 using float32 = float;
 using float64 = double;
+
+using TimeId = int32;

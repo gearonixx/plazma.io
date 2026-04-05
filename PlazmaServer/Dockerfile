@@ -8,6 +8,7 @@ ENV PATH="/root/.cargo/bin:${PATH}"
 RUN rustup default stable
 
 RUN curl -fsSL https://claude.ai/install.sh | bash
+ENV PATH="/root/.claude/bin:${PATH}"
 
 RUN apt-get update && apt-get install -y libuv1-dev
 

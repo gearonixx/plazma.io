@@ -17,7 +17,7 @@ struct UserLogin final {
 class Session final : public QObject {
     Q_OBJECT
 
-    Q_PROPERTY(bool valid READ valid NOTIFY sessionChanged)
+    Q_PROPERTY(bool valid READ valid NOTIFY sessionChanged)s
     Q_PROPERTY(int64 userId READ userId NOTIFY sessionChanged)
     Q_PROPERTY(QString username READ username NOTIFY sessionChanged)
     Q_PROPERTY(QString firstName READ firstName NOTIFY sessionChanged)

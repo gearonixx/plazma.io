@@ -26,8 +26,8 @@ bool GetFileDialog(
     return Platform::FileDialog::Get(parent, files, remoteContent, caption, filter, type, QString());
 }
 
-FileDialog::FileDialog(RpcClient* client, QObject* parent) : QObject(parent), rpc_client_(client) {
-    Q_ASSERT(client != nullptr);
+FileDialog::FileDialog(Api* api, QObject* parent) : QObject(parent), api_(api) {
+    Q_ASSERT(api != nullptr);
 }
 
 FileDialog::~FileDialog() = default;
@@ -93,7 +93,7 @@ void FileDialog::prepareFileTasks(
                 .type = mediaType,
                 .displayName = file.displayName,
                 .onFinished = [this](const plazma::task_queue::FileLoadResult& result) {
-                    rpc_client_->uploadFile(
+                    api_->uploadFile(
                         "/v1/videos/upload",
                         "video",
                         result.filename,
@@ -105,7 +105,7 @@ void FileDialog::prepareFileTasks(
         ));
     }
 
-    rpc_client_->fileLoader()->addTasks(std::move(tasks));
+    api_->fileLoader()->addTasks(std::move(tasks));
 }
 
 void FileDialog::attachFiles(plazma::task_queue::SendMediaType type) {

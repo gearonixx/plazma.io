@@ -13,7 +13,7 @@
 #include <memory>
 
 #include "../core/file_utilities.h"
-#include "src/rpc-client.h"
+#include "src/api.h"
 #include "src/storage/prepare.h"
 #include "src/storage/task_queue.h"
 
@@ -46,7 +46,7 @@ class FileDialog : public QObject {
     Q_OBJECT
 
 public:
-    explicit FileDialog(RpcClient* client, QObject* parent = nullptr);
+    explicit FileDialog(Api* api, QObject* parent = nullptr);
     ~FileDialog();
 
     void GetOpenPaths(
@@ -65,7 +65,7 @@ public:
     void attachFiles(plazma::task_queue::SendMediaType type = plazma::task_queue::SendMediaType::File);
 
 private:
-    RpcClient* rpc_client_ = nullptr;
+    Api* api_ = nullptr;
 };  // class FileDialog
 
 }  // namespace platform

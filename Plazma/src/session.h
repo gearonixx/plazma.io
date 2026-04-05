@@ -3,6 +3,8 @@
 #include <QObject>
 #include <QString>
 
+#include <memory>
+
 #include "basic_types.h"
 
 struct UserLogin final {
@@ -14,10 +16,12 @@ struct UserLogin final {
     bool isPremium = false;
 };
 
+class Api;
+
 class Session final : public QObject {
     Q_OBJECT
 
-    Q_PROPERTY(bool valid READ valid NOTIFY sessionChanged)s
+    Q_PROPERTY(bool valid READ valid NOTIFY sessionChanged)
     Q_PROPERTY(int64 userId READ userId NOTIFY sessionChanged)
     Q_PROPERTY(QString username READ username NOTIFY sessionChanged)
     Q_PROPERTY(QString firstName READ firstName NOTIFY sessionChanged)
@@ -29,6 +33,8 @@ public:
     explicit Session(QObject* parent = nullptr);
 
     void start(const UserLogin& user);
+
+    [[nodiscard]] Api& api() { return *api_; }
 
     [[nodiscard]] bool valid() const { return valid_; }
     [[nodiscard]] int64 userId() const { return userId_; }
@@ -42,6 +48,8 @@ signals:
     void sessionChanged();
 
 private:
+    std::unique_ptr<Api> api_;
+
     bool valid_ = false;
     int64 userId_ = 0;
     QString username_;

@@ -1,8 +1,9 @@
 #include "session.h"
+#include "api.h"
 
 #include <QDebug>
 
-Session::Session(QObject* parent) : QObject(parent) {}
+Session::Session(QObject* parent) : QObject(parent), api_(std::make_unique<Api>(this)) {}
 
 void Session::start(const UserLogin& user) {
     userId_ = user.userId;

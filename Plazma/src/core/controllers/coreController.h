@@ -5,7 +5,7 @@
 
 #include "src/controllers/pageController.h"
 #include "src/controllers/systemController.h"
-#include "src/rpc-client.h"
+#include "src/api.h"
 #include "src/settings.h"
 
 #include "src/models/auth_code_model.h"
@@ -61,7 +61,6 @@ private:
     QSharedPointer<UserModel> userModel_;
     QSharedPointer<Session> session_;
 
-    QScopedPointer<RpcClient> rpc_;
 
     QScopedPointer<platform::FileDialog> fileDialog_;
     QSharedPointer<FileDialogModel> fileDialogModel_;

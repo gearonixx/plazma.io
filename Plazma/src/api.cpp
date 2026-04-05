@@ -1,10 +1,10 @@
-#include "rpc-client.h"
+#include "api.h"
 
 namespace validators {
 std::optional<UserLogin> ensureLoginResponse(const QJsonObject& json, QString& error);
 }
 
-void RpcClient::call(const QString& endpoint, const QJsonObject& body, const HttpMethod& method) {
+void Api::call(const QString& endpoint, const QJsonObject& body, const HttpMethod& method) {
     Q_ASSERT(nam_ != nullptr);
 
     QNetworkRequest req(QUrl(QString(kBaseUrl) + endpoint));
@@ -16,10 +16,10 @@ void RpcClient::call(const QString& endpoint, const QJsonObject& body, const Htt
 
     connect(reply, &QNetworkReply::finished, reply, &QObject::deleteLater);
 
-    qDebug() << "[RPC]" << toMethodString(method) << endpoint;
+    qDebug() << "[API]" << toMethodString(method) << endpoint;
 }
 
-void RpcClient::loginUser(const UserLogin& user) {
+void Api::loginUser(const UserLogin& user) {
     Q_ASSERT(nam_ != nullptr);
 
     QNetworkRequest req(QUrl(QString(kBaseUrl) + "/v1/auth/login"));
@@ -41,7 +41,7 @@ void RpcClient::loginUser(const UserLogin& user) {
     connect(reply, &QNetworkReply::finished, this, [this, reply]() {
         if (reply->error() != QNetworkReply::NoError) {
             auto statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-            qWarning() << "[RPC] loginUser failed:" << reply->errorString();
+            qWarning() << "[API] loginUser failed:" << reply->errorString();
             emit loginError(statusCode, reply->errorString());
         } else {
             auto doc = QJsonDocument::fromJson(reply->readAll());
@@ -51,10 +51,10 @@ void RpcClient::loginUser(const UserLogin& user) {
             const auto user = validators::ensureLoginResponse(json, validationError);
 
             if (!user) {
-                qWarning() << "[RPC] loginUser validation failed:" << validationError;
+                qWarning() << "[API] loginUser validation failed:" << validationError;
                 emit loginError(0, validationError);
             } else {
-                qDebug() << "[RPC] loginUser =>" << user->userId << user->username;
+                qDebug() << "[API] loginUser =>" << user->userId << user->username;
                 emit loginSuccess(*user);
             }
         }
@@ -62,10 +62,10 @@ void RpcClient::loginUser(const UserLogin& user) {
         reply->deleteLater();
     });
 
-    qDebug() << "[RPC] POST /v1/auth/login";
+    qDebug() << "[API] POST /v1/auth/login";
 }
 
-void RpcClient::uploadFile(
+void Api::uploadFile(
     const QString& endpoint,
     const QString& fieldName,
     const QString& filename,
@@ -94,12 +94,12 @@ void RpcClient::uploadFile(
 
     connect(reply, &QNetworkReply::finished, this, [reply]() {
         if (reply->error() != QNetworkReply::NoError) {
-            qWarning() << "[RPC] upload failed:" << reply->errorString();
+            qWarning() << "[API] upload failed:" << reply->errorString();
         } else {
-            qDebug() << "[RPC] upload ok:" << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+            qDebug() << "[API] upload ok:" << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
         }
         reply->deleteLater();
     });
 
-    qDebug() << "[RPC] POST (multipart)" << endpoint << filename << filedata.size() << "bytes";
+    qDebug() << "[API] POST (multipart)" << endpoint << filename << filedata.size() << "bytes";
 }

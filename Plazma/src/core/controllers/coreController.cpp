@@ -61,9 +61,7 @@ void CoreController::initControllers() {
     pageController_.reset(new PageController());
     qmlEngine_->rootContext()->setContextProperty("PageController", pageController_.data());
 
-    rpc_.reset(new RpcClient());
-
-    fileDialog_.reset(new platform::FileDialog(rpc_.data()));
+    fileDialog_.reset(new platform::FileDialog(&session_->api()));
     fileDialogModel_.reset(new FileDialogModel(fileDialog_.data()));
     qmlRegisterSingletonInstance<FileDialogModel>(APPLICATION_ID, 1, 0, "FileDialogModel", fileDialogModel_.data());
 }
@@ -86,10 +84,10 @@ void CoreController::initAuthBindings() {
             .isPremium = userModel_->isPremium(),
         };
 
-        rpc_->loginUser(user);
+        session_->api().loginUser(user);
     });
 
-    connect(rpc_.data(), &RpcClient::loginSuccess, this, [this](const UserLogin& user) {
+    connect(&session_->api(), &Api::loginSuccess, this, [this](const UserLogin& user) {
         session_->start(user);
     });
 }

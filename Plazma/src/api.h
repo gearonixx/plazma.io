@@ -1,4 +1,3 @@
-// rpc_client.h
 #pragma once
 
 #include <QHttpMultiPart>
@@ -12,7 +11,6 @@
 #include "session.h"
 #include "storage/task_queue.h"
 
-/// @brief HTTP request method
 enum class HttpMethod { kGet, kPost, kHead, kPut, kDelete, kPatch, kOptions };
 
 static QByteArray toMethodString(HttpMethod method) {
@@ -28,21 +26,10 @@ static QByteArray toMethodString(HttpMethod method) {
     return kMethods.at(method);
 }
 
-class RpcClient : public QObject {
+class Api : public QObject {
     Q_OBJECT
 public:
-    explicit RpcClient(
-        const QString& host,
-        int port,
-        const QString& user,
-        const QString& password,
-        QObject* parent = nullptr
-    )
-        : QObject(parent),
-          nam_(new QNetworkAccessManager(this)),
-          file_loader_(std::make_unique<plazma::task_queue::TaskQueue>()) {}
-
-    explicit RpcClient(QObject* parent = nullptr)
+    explicit Api(QObject* parent = nullptr)
         : QObject(parent),
           nam_(new QNetworkAccessManager(this)),
           file_loader_(std::make_unique<plazma::task_queue::TaskQueue>()) {}

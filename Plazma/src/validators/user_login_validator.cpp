@@ -1,4 +1,4 @@
-#include "../rpc-client.h"
+#include "../session.h"
 
 #include <QJsonObject>
 #include <optional>

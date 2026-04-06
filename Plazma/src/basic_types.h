@@ -2,6 +2,11 @@
 
 #include <QtGlobal>
 
+#include <functional>
+
+template <typename Signature>
+using Fn = std::function<Signature>;
+
 using int8 = qint8;
 using uint8 = quint8;
 using int16 = qint16;
@@ -14,3 +19,5 @@ using float32 = float;
 using float64 = double;
 
 using TimeId = int32;
+
+using BareId = int32;

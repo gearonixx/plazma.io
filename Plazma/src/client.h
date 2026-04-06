@@ -9,6 +9,7 @@
 #include <QObject>
 #include <QThread>
 
+#include "basic_types.h"
 #include "detail.h"
 
 namespace td_api = td::td_api;
@@ -16,7 +17,7 @@ namespace td_api = td::td_api;
 using RequestPtr = td::td_api::object_ptr<td::td_api::Function>;
 using ResponsePtr = td::td_api::object_ptr<td::td_api::Object>;
 
-using ResponseHandler = lcCallback<void, ResponsePtr>;
+using ResponseHandler = Fn<void(ResponsePtr)>;
 
 using RequestId = td::ClientManager::RequestId;
 

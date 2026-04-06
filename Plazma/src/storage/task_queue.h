@@ -50,7 +50,7 @@ public:
     void process() override;
     void finish() override;
 
-    using Callback = std::function<void(const FileLoadResult&)>;
+    using Callback = Fn<void(const FileLoadResult&)>;
 
     struct Args {
         QString path;

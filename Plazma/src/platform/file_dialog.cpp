@@ -37,7 +37,7 @@ void FileDialog::GetOpenPaths(
     const QString& caption,
     const QString& filter,
     ResultCb callback,
-    std::function<void()> failed
+    Fn<void()> failed
 ) {
     QMetaObject::invokeMethod(
         QCoreApplication::instance(),

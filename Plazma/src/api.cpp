@@ -4,28 +4,36 @@ namespace validators {
 std::optional<UserLogin> ensureLoginResponse(const QJsonObject& json, QString& error);
 }
 
-void Api::call(const QString& endpoint, const QJsonObject& body, const HttpMethod& method) {
+void RequestBuilder::send() {
+    auto* reply = nam_->sendCustomRequest(req_, toMethodString(method_), body_);
+
+    QObject::connect(reply, &QNetworkReply::finished, reply, [reply, done = std::move(done_), fail = std::move(fail_)]() {
+        if (reply->error() != QNetworkReply::NoError) {
+            if (fail) {
+                auto code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+                fail(code, reply->errorString());
+            }
+        } else if (done) {
+            auto doc = QJsonDocument::fromJson(reply->readAll());
+            done(doc.object());
+        }
+        reply->deleteLater();
+    });
+}
+
+RequestBuilder Api::request(const QString& endpoint, const QJsonObject& body, const HttpMethod& method) {
     Q_ASSERT(nam_ != nullptr);
 
     QNetworkRequest req(QUrl(QString(kBaseUrl) + endpoint));
     req.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
     req.setRawHeader("Connection", "close");
 
-    QByteArray data = QJsonDocument(body).toJson(QJsonDocument::Compact);
-    auto* reply = nam_->sendCustomRequest(req, toMethodString(method), data);
-
-    connect(reply, &QNetworkReply::finished, reply, &QObject::deleteLater);
-
     qDebug() << "[API]" << toMethodString(method) << endpoint;
+
+    return RequestBuilder(nam_, req, method, QJsonDocument(body).toJson(QJsonDocument::Compact));
 }
 
 void Api::loginUser(const UserLogin& user) {
-    Q_ASSERT(nam_ != nullptr);
-
-    QNetworkRequest req(QUrl(QString(kBaseUrl) + "/v1/auth/login"));
-    req.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-    req.setRawHeader("Connection", "close");
-
     QJsonObject body{
         {"user_id", user.userId},
         {"username", user.username},
@@ -35,18 +43,8 @@ void Api::loginUser(const UserLogin& user) {
         {"is_premium", user.isPremium},
     };
 
-    QByteArray data = QJsonDocument(body).toJson(QJsonDocument::Compact);
-    auto* reply = nam_->sendCustomRequest(req, "POST", data);
-
-    connect(reply, &QNetworkReply::finished, this, [this, reply]() {
-        if (reply->error() != QNetworkReply::NoError) {
-            auto statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-            qWarning() << "[API] loginUser failed:" << reply->errorString();
-            emit loginError(statusCode, reply->errorString());
-        } else {
-            auto doc = QJsonDocument::fromJson(reply->readAll());
-            auto json = doc.object();
-
+    request("/v1/auth/login", body, HttpMethod::kPost)
+        .done([this](const QJsonObject& json) {
             QString validationError;
             const auto user = validators::ensureLoginResponse(json, validationError);
 
@@ -57,12 +55,12 @@ void Api::loginUser(const UserLogin& user) {
                 qDebug() << "[API] loginUser =>" << user->userId << user->username;
                 emit loginSuccess(*user);
             }
-        }
-
-        reply->deleteLater();
-    });
-
-    qDebug() << "[API] POST /v1/auth/login";
+        })
+        .fail([this](int statusCode, const QString& error) {
+            qWarning() << "[API] loginUser failed:" << error;
+            emit loginError(statusCode, error);
+        })
+        .send();
 }
 
 void Api::uploadFile(

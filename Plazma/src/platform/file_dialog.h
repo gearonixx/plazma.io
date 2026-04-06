@@ -9,7 +9,6 @@
 #include <QPointer>
 #include <QStringList>
 #include <QWidget>
-#include <functional>
 #include <memory>
 
 #include "../core/file_utilities.h"
@@ -24,7 +23,7 @@ struct DialogResult final {
     QByteArray remoteContent;
 };
 
-using ResultCb = std::function<void(const DialogResult& result)>;
+using ResultCb = Fn<void(const DialogResult& result)>;
 
 enum class Type {
     ReadFile,
@@ -54,7 +53,7 @@ public:
         const QString& caption,
         const QString& filter,
         ResultCb callback,
-        std::function<void()> failed
+        Fn<void()> failed
     );
 
     void prepareFileTasks(

@@ -63,6 +63,9 @@ void Api::loginUser(const UserLogin& user) {
     request("/v1/auth/login", body, HttpMethod::kPost)
         .done([this](const QJsonObject& json) {
             QString validationError;
+
+            qDebug() << json;
+
             const auto user = validators::ensureLoginResponse(json, validationError);
 
             if (!user) {

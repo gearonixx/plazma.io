@@ -6,28 +6,34 @@
 namespace validators {
 
 std::optional<UserLogin> ensureLoginResponse(const QJsonObject& json, QString& error) {
-    if (!json.contains("user_id") || json["user_id"].toInteger() <= 0) {
-        error = "user_id: invalid or missing";
+    if (!json.contains("user") || !json["user"].isObject()) {
+        error = "[response] user: field is missing";
+        return std::nullopt;
+    }
+    const auto user = json["user"].toObject();
+
+    if (!user.contains("user_id") || user["user_id"].toInteger() <= 0) {
+        error = "[response] user_id: invalid or missing";
         return std::nullopt;
     }
 
-    if (!json.contains("phone_number") || json["phone_number"].toString().isEmpty()) {
-        error = "phone_number: field is missing";
+    if (!user.contains("phone_number") || user["phone_number"].toString().isEmpty()) {
+        error = "[response] phone_number: field is missing";
         return std::nullopt;
     }
 
-    if (!json.contains("first_name") || json["first_name"].toString().isEmpty()) {
-        error = "first_name: field is missing";
+    if (!user.contains("first_name") || user["first_name"].toString().isEmpty()) {
+        error = "[response] first_name: field is missing";
         return std::nullopt;
     }
 
     return UserLogin{
-        .userId = json["user_id"].toInteger(),
-        .username = json["username"].toString(),
-        .firstName = json["first_name"].toString(),
-        .lastName = json["last_name"].toString(),
-        .phoneNumber = json["phone_number"].toString(),
-        .isPremium = json["is_premium"].toBool(),
+        .userId = user["user_id"].toInteger(),
+        .username = user["username"].toString(),
+        .firstName = user["first_name"].toString(),
+        .lastName = user["last_name"].toString(),
+        .phoneNumber = user["phone_number"].toString(),
+        .isPremium = user["is_premium"].toBool(),
     };
 }
 

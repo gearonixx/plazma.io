@@ -1,0 +1,28 @@
+# Maintainer: Egor Uzhanin <gearonixx@gmail.com>
+pkgname=plazma
+pkgver=0.0.1
+pkgrel=1
+pkgdesc="Private video feed powered by Telegram"
+arch=('x86_64')
+url="https://github.com/gearonixx/plazma"
+license=('custom')
+depends=('qt6-base' 'qt6-declarative' 'mpv' 'qt6-svg' 'qt6-multimedia')
+makedepends=('cmake' 'tdlib' 'git' 'pkgconf')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
+sha256sums=('SKIP')
+
+build() {
+    cmake \
+        -B build \
+        -S "$srcdir/plazma-$pkgver/Plazma" \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DCMAKE_SKIP_RPATH=ON
+    cmake --build build -j"$(nproc)"
+}
+
+package() {
+    DESTDIR="$pkgdir" cmake --install build
+    install -Dm644 "$srcdir/plazma-$pkgver/LICENSE" \
+        "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

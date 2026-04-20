@@ -1,0 +1,217 @@
+name: Release
+
+# Triggered by pushing a version tag:  git tag v0.1.0 && git push origin v0.1.0
+on:
+  push:
+    tags:
+      - 'v[0-9]*.[0-9]*.[0-9]*'
+
+jobs:
+  # ── Ubuntu → .deb ───────────────────────────────────────────────────────────
+  release-ubuntu:
+    name: Package (Ubuntu 22.04 → .deb)
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Qt6 + MPV
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y \
+            cmake ninja-build pkg-config \
+            qt6-base-dev qt6-declarative-dev qt6-tools-dev \
+            qt6-l10n-tools libqt6opengl6-dev qml6-module-qtquick \
+            libmpv-dev
+
+      - name: Cache TdLib
+        id: cache-tdlib
+        uses: actions/cache@v4
+        with:
+          path: ~/tdlib-install
+          key: tdlib-1.8.61-ubuntu-22.04-${{ runner.arch }}
+
+      - name: Build TdLib
+        if: steps.cache-tdlib.outputs.cache-hit != 'true'
+        run: |
+          git clone --depth=1 --branch v1.8.61 https://github.com/tdlib/td.git ~/td
+          cmake -B ~/td/build -S ~/td \
+            -GNinja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX=~/tdlib-install \
+            -DTD_ENABLE_LTO=OFF
+          cmake --build ~/td/build -j$(nproc)
+          cmake --install ~/td/build
+
+      - name: Build + package .deb
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          cmake -B Plazma/build -S Plazma \
+            -GNinja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX=/usr \
+            -DPROJECT_VERSION="$VERSION" \
+            -DTd_DIR=~/tdlib-install/lib/cmake/Td
+          cmake --build Plazma/build -j$(nproc)
+          cd Plazma/build && cpack -G DEB
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: deb-package
+          path: Plazma/build/*.deb
+          if-no-files-found: error
+
+  # ── Arch Linux → .tar.zst ───────────────────────────────────────────────────
+  release-arch:
+    name: Package (Arch Linux → .pkg.tar.zst)
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install deps
+        run: |
+          pacman -Syu --noconfirm
+          pacman -S --noconfirm \
+            base-devel cmake ninja pkgconf git \
+            qt6-base qt6-declarative qt6-tools qt6-svg \
+            mpv tdlib
+
+      - name: Build + package
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          cmake -B Plazma/build -S Plazma \
+            -GNinja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX=/usr
+          cmake --build Plazma/build -j$(nproc)
+          cd Plazma/build && cpack -G TGZ
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: arch-package
+          path: Plazma/build/*.tar.gz
+          if-no-files-found: error
+
+  # ── Windows → .zip ──────────────────────────────────────────────────────────
+  release-windows:
+    name: Package (Windows → .zip)
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Qt6
+        uses: jurplel/install-qt-action@v3
+        with:
+          version: '6.6.3'
+          host: windows
+          target: desktop
+          arch: win64_msvc2019_64
+          modules: 'qtdeclarative qtimageformats'
+          cache: true
+
+      - name: Cache vcpkg
+        uses: actions/cache@v4
+        with:
+          path: C:/vcpkg/installed
+          key: vcpkg-tdlib-x64-windows
+
+      - name: Install TdLib via vcpkg
+        run: vcpkg install tdlib:x64-windows
+
+      - name: Download MPV SDK
+        shell: pwsh
+        run: |
+          Invoke-WebRequest `
+            -Uri "https://sourceforge.net/projects/mpv-player-windows/files/libmpv/mpv-dev-x86_64-latest.7z" `
+            -OutFile mpv-dev.7z
+          7z x mpv-dev.7z -o"$env:GITHUB_WORKSPACE/mpv-sdk"
+
+      - name: Build + package .zip
+        shell: cmd
+        run: |
+          cmake -B Plazma/build -S Plazma ^
+            -DCMAKE_BUILD_TYPE=Release ^
+            -DCMAKE_INSTALL_PREFIX=install ^
+            -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake ^
+            -DVCPKG_TARGET_TRIPLET=x64-windows ^
+            -DMPV_DIR=%GITHUB_WORKSPACE%/mpv-sdk
+          cmake --build Plazma/build --config Release -j %NUMBER_OF_PROCESSORS%
+          cd Plazma/build && cpack -G ZIP
+
+      - name: Bundle Qt DLLs (windeployqt)
+        shell: pwsh
+        run: |
+          $installDir = "Plazma/build/_CPack_Packages/win64/ZIP"
+          $exe = Get-ChildItem -Recurse -Filter "plazma.exe" $installDir | Select-Object -First 1
+          if ($exe) { windeployqt --qmldir Plazma/src/ui $exe.FullName }
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-package
+          path: Plazma/build/*.zip
+          if-no-files-found: error
+
+  # ── GitHub Release ──────────────────────────────────────────────────────────
+  create-release:
+    name: Create GitHub Release
+    needs: [release-ubuntu, release-arch, release-windows]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: deb-package
+          path: dist/
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: arch-package
+          path: dist/
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: windows-package
+          path: dist/
+
+      - name: Create release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          gh release create "$GITHUB_REF_NAME" dist/* \
+            --title "Plazma $VERSION" \
+            --notes "## Plazma $VERSION
+
+          ### Downloads
+          | Platform | File |
+          |----------|------|
+          | Ubuntu/Debian | \`plazma_${VERSION}_amd64.deb\` |
+          | Arch Linux | \`plazma-${VERSION}-Linux.tar.gz\` |
+          | Windows (portable) | \`plazma-${VERSION}-win64.zip\` |
+
+          ### Install
+
+          **Ubuntu/Debian**
+          \`\`\`bash
+          sudo dpkg -i plazma_${VERSION}_amd64.deb
+          \`\`\`
+
+          **Arch Linux (AUR)**
+          \`\`\`bash
+          yay -S plazma
+          # or extract the tarball manually
+          \`\`\`
+
+          **Windows**
+          Extract the zip and run \`bin/plazma.exe\`.
+          "

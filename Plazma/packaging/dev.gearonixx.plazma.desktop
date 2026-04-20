@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Plazma
+GenericName=Video Player
+Comment=Private video feed powered by Telegram
+Exec=plazma %U
+Icon=plazma
+Terminal=false
+Type=Application
+Categories=Qt;Video;Player;
+Keywords=video;telegram;player;feed;
+StartupWMClass=plazma

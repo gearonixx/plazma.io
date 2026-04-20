@@ -1,0 +1,127 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'Plazma/**'
+      - '.github/workflows/ci.yml'
+  pull_request:
+    branches: [master]
+    paths:
+      - 'Plazma/**'
+
+jobs:
+  # ── Ubuntu ──────────────────────────────────────────────────────────────────
+  build-ubuntu:
+    name: Build (Ubuntu 22.04)
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Qt6 + MPV
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y \
+            cmake ninja-build pkg-config \
+            qt6-base-dev qt6-declarative-dev qt6-tools-dev \
+            qt6-l10n-tools libqt6opengl6-dev qml6-module-qtquick \
+            libmpv-dev
+
+      - name: Cache TdLib
+        id: cache-tdlib
+        uses: actions/cache@v4
+        with:
+          path: ~/tdlib-install
+          key: tdlib-1.8.61-ubuntu-22.04-${{ runner.arch }}
+
+      - name: Build TdLib
+        if: steps.cache-tdlib.outputs.cache-hit != 'true'
+        run: |
+          git clone --depth=1 --branch v1.8.61 https://github.com/tdlib/td.git ~/td
+          cmake -B ~/td/build -S ~/td \
+            -GNinja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX=~/tdlib-install \
+            -DTD_ENABLE_LTO=OFF
+          cmake --build ~/td/build -j$(nproc)
+          cmake --install ~/td/build
+
+      - name: Build Plazma
+        run: |
+          cmake -B Plazma/build -S Plazma \
+            -GNinja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DTd_DIR=~/tdlib-install/lib/cmake/Td
+          cmake --build Plazma/build -j$(nproc)
+
+  # ── Arch Linux ──────────────────────────────────────────────────────────────
+  build-arch:
+    name: Build (Arch Linux)
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install deps
+        run: |
+          pacman -Syu --noconfirm
+          pacman -S --noconfirm \
+            base-devel cmake ninja pkgconf git \
+            qt6-base qt6-declarative qt6-tools qt6-svg \
+            mpv tdlib
+
+      - name: Build Plazma
+        run: |
+          cmake -B Plazma/build -S Plazma \
+            -GNinja \
+            -DCMAKE_BUILD_TYPE=Release
+          cmake --build Plazma/build -j$(nproc)
+
+  # ── Windows ─────────────────────────────────────────────────────────────────
+  build-windows:
+    name: Build (Windows)
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Qt6
+        uses: jurplel/install-qt-action@v3
+        with:
+          version: '6.6.3'
+          host: windows
+          target: desktop
+          arch: win64_msvc2019_64
+          modules: 'qtdeclarative qtimageformats'
+          cache: true
+
+      - name: Cache vcpkg packages
+        uses: actions/cache@v4
+        with:
+          path: C:/vcpkg/installed
+          key: vcpkg-tdlib-${{ runner.arch }}-${{ hashFiles('**/CMakeLists.txt') }}
+
+      - name: Install TdLib via vcpkg
+        run: vcpkg install tdlib:x64-windows
+
+      - name: Download MPV SDK
+        shell: pwsh
+        run: |
+          $url = "https://sourceforge.net/projects/mpv-player-windows/files/libmpv/mpv-dev-x86_64-latest.7z"
+          Invoke-WebRequest -Uri $url -OutFile mpv-dev.7z
+          7z x mpv-dev.7z -o"$env:GITHUB_WORKSPACE/mpv-sdk"
+        continue-on-error: true
+
+      - name: Build Plazma
+        shell: cmd
+        run: |
+          cmake -B Plazma/build -S Plazma ^
+            -DCMAKE_BUILD_TYPE=Release ^
+            -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake ^
+            -DVCPKG_TARGET_TRIPLET=x64-windows ^
+            -DMPV_DIR=%GITHUB_WORKSPACE%/mpv-sdk
+          cmake --build Plazma/build --config Release -j %NUMBER_OF_PROCESSORS%

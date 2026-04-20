@@ -26,6 +26,7 @@ public:
         AuthorRole,
         CreatedAtRole,
         ThumbnailRole,
+        StoryboardRole,
     };
 
     struct VideoItem {
@@ -37,6 +38,7 @@ public:
         QString author;
         QString createdAt;
         QString thumbnail;
+        QString storyboard;
     };
 
     explicit VideoFeedModel(Api* api, QObject* parent = nullptr);

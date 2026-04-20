@@ -18,8 +18,11 @@ Page {
     Connections {
         target: AuthorizationCodeModel
         function onWaitingForCodeChanged() {
-            if (AuthorizationCodeModel.waitingForAuthCode)
+            if (AuthorizationCodeModel.waitingForAuthCode) {
                 root.authStep = 1
+                // Phone step is done — safe to clear the field now.
+                phoneField.text = ""
+            }
         }
     }
 
@@ -260,12 +263,15 @@ Page {
     }
 
     function submitPhone() {
+        // Keep the field populated so if TDLib rejects the number (or the
+        // binlog is locked by another instance) the user can fix/resend
+        // without retyping. The field is cleared once we progress to the
+        // code step (authStep === 1).
         PhoneNumberModel.submitPhoneNumber(phoneField.text)
-        phoneField.text = ""
     }
 
     function submitCode() {
         AuthorizationCodeModel.submitAuthCode(codeField.text)
-        codeField.text = ""
     }
+
 }

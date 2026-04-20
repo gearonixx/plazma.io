@@ -141,6 +141,17 @@ void TelegramClient::pollForUpdates() {
         } else {
             qDebug() << "Response for request" << response.request_id << ":" << td_api::to_string(response.object);
 
+            // TDLib reports request failures as a top-level `error` object
+            // (not through the Response::status field). Peek at the tag before
+            // moving into the handler so we can surface the error even when
+            // no handler was registered for that request_id — which is the
+            // case for fire-and-forget calls like setTdlibParameters and
+            // setAuthenticationPhoneNumber.
+            if (response.object && response.object->get_id() == td_api::error::ID) {
+                const auto& err = static_cast<const td_api::error&>(*response.object);
+                emit tdlibError(err.code_, QString::fromStdString(err.message_));
+            }
+
             ResponseHandler handler;
             {
                 std::lock_guard<std::mutex> lock(response_handlers_mu_);

@@ -26,6 +26,7 @@ CoreController::CoreController(
     initControllers();
 
     initSignalHandlers();
+    initTdlibErrorBindings(client);
 
     translator_.reset(new QTranslator());
     updateTranslator(settings_->getAppLanguage());
@@ -84,6 +85,14 @@ void CoreController::initControllers() {
 void CoreController::initSignalHandlers() {
     initTranslationsBindings();
     initAuthBindings();
+}
+
+void CoreController::initTdlibErrorBindings(TelegramClient* client) {
+    // tdlibError is emitted on the TDLib polling thread; AutoConnection will
+    // resolve to QueuedConnection because `this` and `session_` live on the
+    // GUI thread — the slot runs on the GUI thread and it is safe to mutate
+    // QObject state and drive QML bindings.
+    connect(client, &TelegramClient::tdlibError, session_.data(), &Session::reportAuthError);
 }
 
 void CoreController::initAuthBindings() {

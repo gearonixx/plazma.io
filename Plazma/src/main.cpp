@@ -11,6 +11,7 @@
 
 #include "client.h"
 
+#include "core/fatal.h"
 #include "core/osSignalHandler.h"
 
 #include "application.h"
@@ -33,6 +34,10 @@ Q_DECL_EXPORT int main(int argc, char* argv[]) {
     app.setOrganizationName(ORGANIZATION_NAME);
     app.setApplicationDisplayName(APPLICATION_NAME);
     app.setApplicationVersion(APP_VERSION);
+
+    // Install fatal-error plumbing after app identity is set so the default
+    // callback's crash.log lands in the right <AppDataLocation>.
+    plazma::fatal::install();
 
     qDebug() << app.organizationName();
 

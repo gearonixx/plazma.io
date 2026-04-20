@@ -44,6 +44,11 @@ signals:
     void authCodeRequired();
     void userLoaded(UserPtr me);
 
+    // Emitted from the polling thread whenever TDLib replies to a request with
+    // a td_api::error. Consumers get the raw TDLib code + message; it is up to
+    // higher layers (Session) to decide how to present it.
+    void tdlibError(int code, const QString& message);
+
 public slots:
     void phoneNumberReceived(const QString& phone_number);
     void authCodeReceived(const QString& auth_code);

@@ -113,7 +113,8 @@ std::string Handler::HandleRequest(
                     std::nullopt,
                     row.IsNull("thumbnail_url") ? std::string{} : row.Get<std::string>("thumbnail_url"),
                     visibility,
-                    created_at_ms
+                    created_at_ms,
+                    row.IsNull("storyboard_url") ? std::string{} : row.Get<std::string>("storyboard_url")
                 ));
                 ++collected;
             }
@@ -155,7 +156,8 @@ std::string Handler::HandleRequest(
                         std::nullopt,
                         row.IsNull("thumbnail_url") ? std::string{} : row.Get<std::string>("thumbnail_url"),
                         "public",  // only public videos land in videos_by_day
-                        row.IsNull("created_at") ? 0LL : row.Get<int64_t>("created_at")
+                        row.IsNull("created_at") ? 0LL : row.Get<int64_t>("created_at"),
+                        row.IsNull("storyboard_url") ? std::string{} : row.Get<std::string>("storyboard_url")
                     ));
                     ++collected;
                 }

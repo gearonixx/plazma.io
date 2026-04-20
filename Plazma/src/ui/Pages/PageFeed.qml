@@ -19,7 +19,7 @@ Page {
     // Reusable shimmer skeleton rectangle
     component SkeletonRect : Rectangle {
         id: skelRoot
-        color: "#EDE6DF"
+        color: PlazmaStyle.color.softAmber
         clip: true
 
         Rectangle {
@@ -265,21 +265,74 @@ Page {
                     anchors.fill: parent
                     spacing: 0
 
-                    // Thumbnail
+                    // Thumbnail (with YouTube-style hover-scrub when a storyboard
+                    // sprite is available). The storyboard is a 10×10 grid of
+                    // 160×90 tiles; mouse-X selects a tile and Image.sourceClipRect
+                    // crops to it. Falls back to the static thumbnail otherwise.
                     Rectangle {
+                        id: thumbBox
                         Layout.fillWidth: true
                         Layout.preferredHeight: width * 9 / 16
                         color: "#1A1A1A"
                         radius: 10
                         clip: true
 
+                        readonly property bool hasStoryboard:
+                            model.storyboard !== undefined
+                            && model.storyboard !== null
+                            && String(model.storyboard).length > 0
+
+                        property bool scrubbing: false
+                        property real scrubProgress: 0.0  // 0.0 .. 1.0
+                        readonly property int scrubTileIndex:
+                            Math.max(0, Math.min(99, Math.floor(scrubProgress * 100)))
+                        readonly property int scrubCol: scrubTileIndex % 10
+                        readonly property int scrubRow: Math.floor(scrubTileIndex / 10)
+
+                        // Static thumbnail layer
                         Image {
                             anchors.fill: parent
                             source: model.thumbnail
-                            visible: model.thumbnail && model.thumbnail.length > 0
+                            visible: !thumbBox.scrubbing
+                                     && model.thumbnail
+                                     && model.thumbnail.length > 0
                             fillMode: Image.PreserveAspectCrop
                             asynchronous: true
                             cache: true
+                        }
+
+                        // Storyboard scrub layer — only loaded once the user
+                        // starts hovering, so we don't prefetch every sprite in
+                        // the feed up front.
+                        Image {
+                            id: scrubImage
+                            anchors.fill: parent
+                            source: thumbBox.hasStoryboard ? model.storyboard : ""
+                            visible: thumbBox.scrubbing && status === Image.Ready
+                            fillMode: Image.PreserveAspectCrop
+                            asynchronous: true
+                            cache: true
+                            sourceClipRect: Qt.rect(thumbBox.scrubCol * 160,
+                                                    thumbBox.scrubRow * 90,
+                                                    160, 90)
+                        }
+
+                        // Scrub progress bar (YouTube-ish thin line at the bottom)
+                        Rectangle {
+                            visible: thumbBox.scrubbing
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            anchors.bottom: parent.bottom
+                            height: 3
+                            color: Qt.rgba(1, 1, 1, 0.25)
+
+                            Rectangle {
+                                anchors.left: parent.left
+                                anchors.top: parent.top
+                                anchors.bottom: parent.bottom
+                                width: parent.width * thumbBox.scrubProgress
+                                color: PlazmaStyle.color.burntOrange
+                            }
                         }
 
                         Text {
@@ -344,14 +397,37 @@ Page {
                 }
 
                 MouseArea {
+                    id: cardMouse
                     anchors.fill: parent
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
 
+                    // Update scrub state when hovering over the thumbnail box.
+                    // Only react when a storyboard sprite is available; otherwise
+                    // the UI just stays on the static thumbnail.
+                    onPositionChanged: {
+                        if (!thumbBox.hasStoryboard) return
+                        var p = mapToItem(thumbBox, mouseX, mouseY)
+                        if (p.x >= 0 && p.y >= 0 && p.x <= thumbBox.width && p.y <= thumbBox.height) {
+                            thumbBox.scrubbing = true
+                            thumbBox.scrubProgress = Math.max(0, Math.min(1, p.x / thumbBox.width))
+                        } else {
+                            thumbBox.scrubbing = false
+                        }
+                    }
+                    onEntered: {
+                        if (!thumbBox.hasStoryboard) return
+                        var p = mapToItem(thumbBox, mouseX, mouseY)
+                        if (p.y >= 0 && p.y <= thumbBox.height) {
+                            thumbBox.scrubbing = true
+                        }
+                    }
+                    onExited: thumbBox.scrubbing = false
+
                     Rectangle {
                         anchors.fill: parent
                         radius: 10
-                        color: parent.containsMouse ? Qt.rgba(0, 0, 0, 0.04) : "transparent"
+                        color: cardMouse.containsMouse ? Qt.rgba(0, 0, 0, 0.04) : "transparent"
                         Behavior on color { ColorAnimation { duration: 100 } }
                     }
 

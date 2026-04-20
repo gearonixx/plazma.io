@@ -89,7 +89,9 @@ void Api::uploadFile(
     const QString& fieldName,
     const QString& filename,
     const QString& mime,
-    const QByteArray& filedata
+    const QByteArray& filedata,
+    const QByteArray& thumbnail,
+    const QString& thumbnailMime
 ) {
     Q_ASSERT(nam_ != nullptr);
 
@@ -103,6 +105,19 @@ void Api::uploadFile(
     );
     filePart.setBody(filedata);
     multiPart->append(filePart);
+
+    // Optional optimistic thumbnail (Phase 2). The server keys off name="thumbnail",
+    // stores it immediately, and its async ffmpeg job skips primary extraction.
+    if (!thumbnail.isEmpty()) {
+        QHttpPart thumbPart;
+        thumbPart.setHeader(QNetworkRequest::ContentTypeHeader, thumbnailMime);
+        thumbPart.setHeader(
+            QNetworkRequest::ContentDispositionHeader,
+            QStringLiteral("form-data; name=\"thumbnail\"; filename=\"thumb.jpg\"")
+        );
+        thumbPart.setBody(thumbnail);
+        multiPart->append(thumbPart);
+    }
 
     request(endpoint, multiPart)
         .done([this, endpoint, filename](const QJsonObject&) {

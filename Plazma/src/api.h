@@ -64,7 +64,9 @@ public:
         const QString& fieldName,
         const QString& filename,
         const QString& mime,
-        const QByteArray& filedata
+        const QByteArray& filedata,
+        const QByteArray& thumbnail = {},
+        const QString& thumbnailMime = QStringLiteral("image/jpeg")
     );
     void fetchVideos(Fn<void(QJsonArray)> onOk, Fn<void(int, QString)> onFail = {});
 

@@ -37,6 +37,12 @@ public:
     void reportError(int statusCode, const QString& message);
     QString errorMessage() const { return errorMessage_; }
 
+public slots:
+    // Handles errors originating from TDLib (as opposed to the HTTP API).
+    // Maps well-known cases (binlog lock, un-initialized parameters) to a
+    // user-friendly message before publishing on `errorMessage`.
+    void reportAuthError(int tdlibCode, const QString& rawMessage);
+
     [[nodiscard]] Api& api() { return *api_; }
 
     [[nodiscard]] bool valid() const { return valid_; }

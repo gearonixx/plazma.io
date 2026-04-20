@@ -30,6 +30,7 @@ QVariant VideoFeedModel::data(const QModelIndex& index, int role) const {
         case AuthorRole:    return item.author;
         case CreatedAtRole: return item.createdAt;
         case ThumbnailRole: return item.thumbnail;
+        case StoryboardRole: return item.storyboard;
         default:            return {};
     }
 }
@@ -44,6 +45,7 @@ QHash<int, QByteArray> VideoFeedModel::roleNames() const {
         {AuthorRole,    "author"},
         {CreatedAtRole, "createdAt"},
         {ThumbnailRole, "thumbnail"},
+        {StoryboardRole, "storyboard"},
     };
 }
 
@@ -69,6 +71,7 @@ void VideoFeedModel::refresh() {
                     .author    = o.value("author").toString(),
                     .createdAt = o.value("created_at").toString(),
                     .thumbnail = o.value("thumbnail").toString(),
+                    .storyboard = o.value("storyboard").toString(),
                 });
             }
             endResetModel();

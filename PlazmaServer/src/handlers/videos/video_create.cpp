@@ -2,7 +2,11 @@
 
 #include <algorithm>
 #include <cctype>
+#include <exception>
+#include <utility>
 
+#include <userver/components/component_context.hpp>
+#include <userver/engine/async.hpp>
 #include <userver/formats/json/serialize.hpp>
 #include <userver/formats/json/value_builder.hpp>
 #include <userver/http/common_headers.hpp>
@@ -11,6 +15,7 @@
 #include <userver/utils/uuid7.hpp>
 
 #include "utils/auth.hpp"
+#include "utils/thumbnail.hpp"
 #include "utils/video.hpp"
 
 namespace real_medium::handlers::videos::create {
@@ -130,7 +135,8 @@ Handler::Handler(
     const userver::components::ComponentContext& context
 ) : HttpHandlerBase(config, context),
     s3_(context.FindComponent<s3::S3Component>()),
-    session_(context.FindComponent<userver::components::Scylla>("scylla").GetSession()) {
+    session_(context.FindComponent<userver::components::Scylla>("scylla").GetSession()),
+    fs_tp_(context.GetTaskProcessor("fs-task-processor")) {
 }
 
 std::string Handler::HandleRequest(
@@ -164,13 +170,19 @@ std::string Handler::HandleRequest(
         return R"({"error": "no parts found in multipart body"})";
     }
 
-    // Locate file part and optional form fields
-    const MultipartPart* file_part = nullptr;
+    // Locate file part and optional form fields. The video file part is the
+    // first non-thumbnail part with a filename; the optional thumbnail part is
+    // keyed by name == "thumbnail" (client sends an optimistic frame so the
+    // feed can display *something* before the server's ffmpeg job finishes).
+    const MultipartPart* file_part      = nullptr;
+    const MultipartPart* thumbnail_part = nullptr;
     std::string title_field;
     std::string visibility_field = "public";
 
     for (const auto& part : parts) {
-        if (!part.filename.empty() && file_part == nullptr) {
+        if (part.name == "thumbnail") {
+            if (!part.data.empty()) thumbnail_part = &part;
+        } else if (!part.filename.empty() && file_part == nullptr) {
             file_part = &part;
         } else if (part.name == "title") {
             title_field = part.data;
@@ -286,19 +298,212 @@ std::string Handler::HandleRequest(
         return R"({"error": "metadata write failed"})";
     }
 
+    // Phase 2: persist the client-supplied optimistic thumbnail synchronously
+    // so the response already carries a working thumbnail URL. Small image, tiny
+    // cost; if it fails we just let the server-side extraction fill the gap.
+    std::string thumb_url_for_response;
+    if (thumbnail_part != nullptr) {
+        std::string thumb_mime = thumbnail_part->content_type;
+        if (thumb_mime.empty()) thumb_mime = "image/jpeg";
+        try {
+            SeedOptimisticThumbnail(video_id, thumbnail_part->data, thumb_mime);
+            thumb_url_for_response = "s3://plazma-videos/videos/" + video_id + "/thumb.jpg";
+        } catch (const std::exception& ex) {
+            LOG_WARNING() << "optimistic thumbnail seed failed video_id=" << video_id
+                          << ": " << ex.what();
+        }
+    }
+
+    // Phase 1 + 3: run ffmpeg-based derivatives (authoritative thumbnail +
+    // storyboard sprite) asynchronously on the fs task processor so the client
+    // isn't blocked. If the client already supplied a usable thumbnail, skip
+    // the primary frame extraction — the storyboard still runs.
+    const bool have_optimistic = !thumb_url_for_response.empty();
+    ScheduleMediaDerivatives(
+        file_part->data, mime, video_id, user_id, day,
+        visibility_field, have_optimistic
+    );
+
     LOG_INFO() << "POST /v1/videos video_id=" << video_id
                << " user_id=" << user_id
                << " size=" << size_bytes
                << " mime=" << mime
-               << " visibility=" << visibility_field;
+               << " visibility=" << visibility_field
+               << " optimistic_thumb=" << (have_optimistic ? "yes" : "no");
 
     userver::formats::json::ValueBuilder response;
     response["video"] = utils::video::BuildVideoJson(
         video_id, user_id, title, storage_url, mime, size_bytes,
-        std::nullopt, "", visibility_field, created_at_ms
+        std::nullopt, thumb_url_for_response, visibility_field, created_at_ms
     );
     request.SetResponseStatus(userver::server::http::HttpStatus::kCreated);
     return userver::formats::json::ToString(response.ExtractValue());
+}
+
+void Handler::SeedOptimisticThumbnail(const std::string& video_id,
+                                      const std::string& thumb_bytes,
+                                      const std::string& thumb_mime) const {
+    const std::string key = "videos/" + video_id + "/thumb.jpg";
+    const std::string url = "s3://plazma-videos/" + key;
+
+    userver::s3api::Client::Meta meta;
+    meta[userver::http::headers::kContentType] = thumb_mime;
+    s3_.GetClient()->PutObject(key, thumb_bytes, meta);
+
+    // Look up the rest of the primary-key material (user_id, day, visibility,
+    // created_at) via the single-partition video_by_id table. The caller just
+    // finished writing this row, so the read should find it immediately.
+    int64_t user_id    = 0;
+    int64_t created_at = 0;
+    std::string day;
+    std::string visibility;
+    {
+        auto table = session_->GetTable("video_by_id");
+        userver::storages::scylla::operations::SelectOne sel;
+        sel.AddAllColumns();
+        sel.WhereString("video_id", video_id);
+        auto row = table.Execute(sel);
+        if (row.Empty()) return;  // metadata row vanished — nothing to do
+        user_id    = row.Get<int64_t>("user_id");
+        day        = row.IsNull("day") ? std::string{} : row.Get<std::string>("day");
+        visibility = row.IsNull("visibility") ? std::string{"public"} : row.Get<std::string>("visibility");
+        created_at = row.IsNull("created_at") ? 0LL : row.Get<int64_t>("created_at");
+    }
+
+    {
+        auto table = session_->GetTable("videos");
+        userver::storages::scylla::operations::UpdateOne upd;
+        upd.SetString("thumbnail_url", url);
+        upd.WhereInt64("user_id", user_id);
+        upd.WhereString("video_id", video_id);
+        table.Execute(upd);
+    }
+    {
+        auto table = session_->GetTable("video_by_id");
+        userver::storages::scylla::operations::UpdateOne upd;
+        upd.SetString("thumbnail_url", url);
+        upd.WhereString("video_id", video_id);
+        table.Execute(upd);
+    }
+    if (visibility == "public" && !day.empty() && created_at > 0) {
+        auto table = session_->GetTable("videos_by_day");
+        userver::storages::scylla::operations::UpdateOne upd;
+        upd.SetString("thumbnail_url", url);
+        upd.WhereString("day", day);
+        upd.WhereInt64("created_at", created_at);
+        upd.WhereString("video_id", video_id);
+        table.Execute(upd);
+    }
+}
+
+void Handler::ScheduleMediaDerivatives(std::string video_bytes,
+                                       std::string mime,
+                                       std::string video_id,
+                                       int64_t user_id,
+                                       std::string day,
+                                       std::string visibility,
+                                       bool skip_primary_thumb) const {
+    // Handler is a userver component — its lifetime spans the entire server
+    // process, so capturing `this` by value is safe across the detached task.
+    userver::engine::AsyncNoSpan(fs_tp_, [
+        this,
+        video_bytes = std::move(video_bytes),
+        mime = std::move(mime),
+        video_id = std::move(video_id),
+        user_id,
+        day = std::move(day),
+        visibility = std::move(visibility),
+        skip_primary_thumb
+    ]() mutable {
+        namespace ops = userver::storages::scylla::operations;
+
+        // video_by_id is our source of truth for created_at; we need it to
+        // update videos_by_day (public feed).
+        int64_t created_at = 0;
+        try {
+            auto table = session_->GetTable("video_by_id");
+            ops::SelectOne sel;
+            sel.AddAllColumns();
+            sel.WhereString("video_id", video_id);
+            auto row = table.Execute(sel);
+            if (!row.Empty() && !row.IsNull("created_at")) {
+                created_at = row.Get<int64_t>("created_at");
+            }
+        } catch (const std::exception& ex) {
+            LOG_WARNING() << "derivatives: failed to read video_by_id.created_at for "
+                          << video_id << ": " << ex.what();
+        }
+
+        auto update_all = [&](const std::string& column, const std::string& value) {
+            try {
+                auto table = session_->GetTable("videos");
+                ops::UpdateOne upd;
+                upd.SetString(column, value);
+                upd.WhereInt64("user_id", user_id);
+                upd.WhereString("video_id", video_id);
+                table.Execute(upd);
+            } catch (const std::exception& ex) {
+                LOG_WARNING() << "derivatives: videos update failed: " << ex.what();
+            }
+            try {
+                auto table = session_->GetTable("video_by_id");
+                ops::UpdateOne upd;
+                upd.SetString(column, value);
+                upd.WhereString("video_id", video_id);
+                table.Execute(upd);
+            } catch (const std::exception& ex) {
+                LOG_WARNING() << "derivatives: video_by_id update failed: " << ex.what();
+            }
+            if (visibility == "public" && !day.empty() && created_at > 0) {
+                try {
+                    auto table = session_->GetTable("videos_by_day");
+                    ops::UpdateOne upd;
+                    upd.SetString(column, value);
+                    upd.WhereString("day", day);
+                    upd.WhereInt64("created_at", created_at);
+                    upd.WhereString("video_id", video_id);
+                    table.Execute(upd);
+                } catch (const std::exception& ex) {
+                    LOG_WARNING() << "derivatives: videos_by_day update failed: " << ex.what();
+                }
+            }
+        };
+
+        // Primary thumbnail — skip if the client already seeded a good one.
+        if (!skip_primary_thumb) {
+            try {
+                auto jpg = utils::thumbnail::Extract(video_bytes, mime, video_id);
+                const std::string key = "videos/" + video_id + "/thumb.jpg";
+                const std::string url = "s3://plazma-videos/" + key;
+                userver::s3api::Client::Meta meta;
+                meta[userver::http::headers::kContentType] = "image/jpeg";
+                s3_.GetClient()->PutObject(key, jpg, meta);
+                update_all("thumbnail_url", url);
+                LOG_INFO() << "derivatives: thumbnail ready for " << video_id
+                           << " (" << jpg.size() << " bytes)";
+            } catch (const std::exception& ex) {
+                LOG_WARNING() << "derivatives: thumbnail extraction failed for "
+                              << video_id << ": " << ex.what();
+            }
+        }
+
+        // Storyboard sprite — independent of the primary thumbnail; failures
+        // here should not block the already-uploaded main video.
+        try {
+            auto jpg = utils::thumbnail::ExtractStoryboard(video_bytes, mime, video_id);
+            const std::string key = "videos/" + video_id + "/storyboard.jpg";
+            const std::string url = "s3://plazma-videos/" + key;
+            userver::s3api::Client::Meta meta;
+            meta[userver::http::headers::kContentType] = "image/jpeg";
+            s3_ref->GetClient()->PutObject(key, jpg, meta);
+            update_all("storyboard_url", url);
+            LOG_INFO() << "derivatives: storyboard ready for " << video_id
+                       << " (" << jpg.size() << " bytes)";
+        } catch (const std::exception& ex) {
+            LOG_WARNING() << "derivatives: storyboard extraction failed for "
+                          << video_id << ": " << ex.what();
+        }
+    }).Detach();
 }
 
 }  // namespace real_medium::handlers::videos::create

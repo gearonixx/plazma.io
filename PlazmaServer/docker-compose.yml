@@ -31,6 +31,7 @@ services:
           cqlsh scylla 9042 -f /migrations/002_add_user_fields.cql
           cqlsh scylla 9042 -f /migrations/003_add_auth_fields.cql
           cqlsh scylla 9042 -f /migrations/004_video_tables.cql
+          cqlsh scylla 9042 -f /migrations/005_storyboard.cql
           echo "Migration done."
 
     minio:

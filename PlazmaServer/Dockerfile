@@ -1,7 +1,7 @@
 FROM ghcr.io/userver-framework/ubuntu-22.04-userver-base:latest
 
 
-RUN apt-get update && apt-get install -y sudo curl gnupg lsb-release libclang-dev clangd
+RUN apt-get update && apt-get install -y sudo curl gnupg lsb-release libclang-dev clangd ffmpeg
 
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"

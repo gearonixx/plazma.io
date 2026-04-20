@@ -47,62 +47,62 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/Pages/PageFeed.qml" line="326"/>
+        <location filename="../ui/Pages/PageFeed.qml" line="379"/>
         <source>Untitled</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/Pages/PageFeed.qml" line="379"/>
+        <location filename="../ui/Pages/PageFeed.qml" line="455"/>
         <source>Just now</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/Pages/PageFeed.qml" line="384"/>
+        <location filename="../ui/Pages/PageFeed.qml" line="460"/>
         <source>1 minute ago</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/Pages/PageFeed.qml" line="384"/>
+        <location filename="../ui/Pages/PageFeed.qml" line="460"/>
         <source>%1 minutes ago</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/Pages/PageFeed.qml" line="390"/>
+        <location filename="../ui/Pages/PageFeed.qml" line="466"/>
         <source>1 hour ago</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/Pages/PageFeed.qml" line="390"/>
+        <location filename="../ui/Pages/PageFeed.qml" line="466"/>
         <source>%1 hours ago</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/Pages/PageFeed.qml" line="394"/>
+        <location filename="../ui/Pages/PageFeed.qml" line="470"/>
         <source>Yesterday</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/Pages/PageFeed.qml" line="395"/>
+        <location filename="../ui/Pages/PageFeed.qml" line="471"/>
         <source>%1 days ago</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/Pages/PageFeed.qml" line="400"/>
+        <location filename="../ui/Pages/PageFeed.qml" line="476"/>
         <source>1 week ago</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/Pages/PageFeed.qml" line="400"/>
+        <location filename="../ui/Pages/PageFeed.qml" line="476"/>
         <source>%1 weeks ago</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/Pages/PageFeed.qml" line="406"/>
+        <location filename="../ui/Pages/PageFeed.qml" line="482"/>
         <source>1 month ago</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/Pages/PageFeed.qml" line="406"/>
+        <location filename="../ui/Pages/PageFeed.qml" line="482"/>
         <source>%1 months ago</source>
         <translation type="unfinished"></translation>
     </message>
@@ -110,12 +110,12 @@
 <context>
     <name>PageLogin</name>
     <message>
-        <location filename="../ui/Pages/PageLogin.qml" line="44"/>
+        <location filename="../ui/Pages/PageLogin.qml" line="47"/>
         <source>Login failed: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/Pages/PageLogin.qml" line="110"/>
+        <location filename="../ui/Pages/PageLogin.qml" line="113"/>
         <source>Your Phone Number</source>
         <translation>Ваш номер телефона</translation>
     </message>
@@ -126,28 +126,28 @@ and enter your phone number</source>
 и введите номер телефона</translation>
     </message>
     <message>
-        <location filename="../ui/Pages/PageLogin.qml" line="119"/>
+        <location filename="../ui/Pages/PageLogin.qml" line="122"/>
         <source>Enter your number with country code</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/Pages/PageLogin.qml" line="131"/>
+        <location filename="../ui/Pages/PageLogin.qml" line="134"/>
         <source>+1 234 567 8900</source>
         <translation>+7 999 123 4567</translation>
     </message>
     <message>
-        <location filename="../ui/Pages/PageLogin.qml" line="163"/>
-        <location filename="../ui/Pages/PageLogin.qml" line="252"/>
+        <location filename="../ui/Pages/PageLogin.qml" line="166"/>
+        <location filename="../ui/Pages/PageLogin.qml" line="255"/>
         <source>Next</source>
         <translation>Далее</translation>
     </message>
     <message>
-        <location filename="../ui/Pages/PageLogin.qml" line="197"/>
+        <location filename="../ui/Pages/PageLogin.qml" line="200"/>
         <source>Enter The Code</source>
         <translation>Введите код</translation>
     </message>
     <message>
-        <location filename="../ui/Pages/PageLogin.qml" line="206"/>
+        <location filename="../ui/Pages/PageLogin.qml" line="209"/>
         <source>We&apos;ve sent the code to your Telegram app</source>
         <translation type="unfinished"></translation>
     </message>
@@ -158,7 +158,7 @@ Telegram app</source>
 приложение Telegram</translation>
     </message>
     <message>
-        <location filename="../ui/Pages/PageLogin.qml" line="218"/>
+        <location filename="../ui/Pages/PageLogin.qml" line="221"/>
         <source>Your code</source>
         <translation>Ваш код</translation>
     </message>
@@ -342,23 +342,19 @@ Telegram app</source>
         <location filename="../ui/Pages/PageStart.qml" line="95"/>
         <source>Your private video feed,
 powered by Telegram</source>
-        <translation type="unfinished"></translation>
+        <translation>Ваша личная видеолента
+на базе Telegram</translation>
     </message>
     <message>
         <location filename="../ui/Pages/PageStart.qml" line="126"/>
         <source>Get started</source>
-        <translation type="unfinished"></translation>
+        <translation>Начать</translation>
     </message>
     <message>
         <location filename="../ui/Pages/PageStart.qml" line="135"/>
         <source>Connect with your Telegram
 account to start watching</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Connect with your Telegram account
-to start watching</source>
-        <translation type="vanished">Подключите свой аккаунт Telegram,
+        <translation>Подключите свой аккаунт Telegram,
 чтобы начать смотреть</translation>
     </message>
     <message>
@@ -433,6 +429,34 @@ We&apos;ll push it to the server and add it to the feed.</source>
     <message>
         <source>Choose language</source>
         <translation type="vanished">Выберите язык</translation>
+    </message>
+</context>
+<context>
+    <name>Session</name>
+    <message>
+        <location filename="../session.cpp" line="43"/>
+        <source>Another Plazma instance is already running. Close it and try again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../session.cpp" line="50"/>
+        <source>Still getting ready. Please wait a moment and try again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../session.cpp" line="52"/>
+        <source>That phone number doesn&apos;t look right. Check the country code.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../session.cpp" line="54"/>
+        <source>The code doesn&apos;t match. Try again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../session.cpp" line="56"/>
+        <source>The code has expired. Request a new one.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

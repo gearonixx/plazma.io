@@ -42,6 +42,7 @@ private:
 
     void initTranslationsBindings();
     void initAuthBindings();
+    void initTdlibErrorBindings(TelegramClient* client);
     void updateTranslator(const QLocale& locale) const;
 
     QQmlApplicationEngine* qmlEngine_{};

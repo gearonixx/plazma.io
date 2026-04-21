@@ -6,8 +6,10 @@
 #include <QObject>
 #include <QQmlApplicationEngine>
 #include <QString>
+#include <QTemporaryFile>
 
 #include <exception>
+#include <memory>
 
 class Utils : public QObject {
     Q_OBJECT
@@ -33,6 +35,12 @@ public:
     // because failures are silent (no exceptions, no logging on success path).
     [[nodiscard]] Q_INVOKABLE static bool initializePath(const QString& path);
     [[nodiscard]] Q_INVOKABLE static bool createEmptyFile(const QString& path);
+
+    // Returned file is unopened; caller must open() before use. Keep the
+    // unique_ptr alive for as long as the temp path is needed — autoRemove
+    // deletes the file when the object is destroyed.
+    [[nodiscard]] static std::unique_ptr<QTemporaryFile>
+    makeTempFile(const QString& prefix, const QString& suffix);
 
     static void logException(const std::exception& e);
     static void logException(const std::exception_ptr& eptr = std::current_exception());

@@ -14,6 +14,9 @@ Utils* Utils::instance() { return s_instance; }
 static constexpr char kAlphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 static constexpr int kAlphabetLen = sizeof(kAlphabet) - 1;
 
+// Qt's QTemporaryFile template placeholder — replaced with random chars on open().
+static constexpr auto kTempFileRandomPlaceholder = "XXXXXX";
+
 QString Utils::getRandomString(int len) {
     if (len <= 0) return {};
 
@@ -71,6 +74,13 @@ bool Utils::initializePath(const QString& path) {
 bool Utils::createEmptyFile(const QString& path) {
     QFile f(path);
     return f.open(QIODevice::WriteOnly | QIODevice::Truncate);
+}
+
+std::unique_ptr<QTemporaryFile> Utils::makeTempFile(const QString& prefix, const QString& suffix) {
+    auto file = std::make_unique<QTemporaryFile>(prefix + QLatin1String(kTempFileRandomPlaceholder) + suffix);
+    file->setAutoRemove(true);
+
+    return file;
 }
 
 void Utils::logException(const std::exception& e) {

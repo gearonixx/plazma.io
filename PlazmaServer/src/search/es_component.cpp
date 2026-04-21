@@ -5,6 +5,7 @@
 #include <string>
 
 #include <userver/clients/http/component.hpp>
+#include <userver/components/component_config.hpp>
 #include <userver/formats/common/type.hpp>
 #include <userver/formats/json/serialize.hpp>
 #include <userver/formats/json/value.hpp>
@@ -232,9 +233,9 @@ std::optional<EsSearchResult> EsComponent::Search(
     try {
         auto response = http_.CreateRequest()
                             .post(endpoint, body)
-                            .AddHeader("Content-Type", "application/json")
+                            .headers({{"Content-Type", "application/json"}})
                             .timeout(std::chrono::milliseconds{500})
-                            .Perform();
+                            .perform();
 
         const int64_t elapsed = NowMs() - t0;
 

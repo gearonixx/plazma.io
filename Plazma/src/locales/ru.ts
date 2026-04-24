@@ -62,35 +62,103 @@
 <context>
     <name>DownloadsModel</name>
     <message>
-        <location filename="../models/downloads_model.cpp" line="216"/>
+        <location filename="../models/downloads_model.cpp" line="572"/>
         <source>Can&apos;t write to %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../models/downloads_model.cpp" line="231"/>
-        <location filename="../models/downloads_model.cpp" line="254"/>
-        <location filename="../models/downloads_model.cpp" line="346"/>
+        <location filename="../models/downloads_model.cpp" line="555"/>
+        <location filename="../models/downloads_model.cpp" line="576"/>
+        <location filename="../models/downloads_model.cpp" line="593"/>
+        <location filename="../models/downloads_model.cpp" line="784"/>
+        <location filename="../models/downloads_model.cpp" line="790"/>
+        <location filename="../models/downloads_model.cpp" line="802"/>
         <source>Download failed: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../models/downloads_model.cpp" line="239"/>
+        <location filename="../models/downloads_model.cpp" line="220"/>
+        <source>almost done</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../models/downloads_model.cpp" line="221"/>
+        <source>%1s left</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../models/downloads_model.cpp" line="225"/>
+        <source>%1m %2s left</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../models/downloads_model.cpp" line="225"/>
+        <source>%1m left</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../models/downloads_model.cpp" line="229"/>
+        <source>%1h %2m left</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../models/downloads_model.cpp" line="229"/>
+        <source>%1h left</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../models/downloads_model.cpp" line="311"/>
+        <source>Can&apos;t download — this video has no source URL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../models/downloads_model.cpp" line="490"/>
+        <source>File is no longer available</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../models/downloads_model.cpp" line="550"/>
+        <source>Not enough disk space (%1 free, %2 needed)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../models/downloads_model.cpp" line="589"/>
         <source>Network is unavailable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../models/downloads_model.cpp" line="273"/>
+        <location filename="../models/downloads_model.cpp" line="626"/>
         <source>Downloading “%1”</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../models/downloads_model.cpp" line="274"/>
-        <location filename="../models/downloads_model.cpp" line="355"/>
+        <location filename="../models/downloads_model.cpp" line="626"/>
+        <location filename="../models/downloads_model.cpp" line="808"/>
         <source>video</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../models/downloads_model.cpp" line="355"/>
+        <location filename="../models/downloads_model.cpp" line="768"/>
+        <source>Retrying… (%1 / %2)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../models/downloads_model.cpp" line="782"/>
+        <source>HTTP %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../models/downloads_model.cpp" line="788"/>
+        <source>Unknown error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../models/downloads_model.cpp" line="799"/>
+        <source>Could not finalize the downloaded file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../models/downloads_model.cpp" line="808"/>
         <source>Saved “%1”</source>
         <translation type="unfinished"></translation>
     </message>
@@ -355,13 +423,13 @@ Telegram app</source>
     </message>
     <message>
         <location filename="../ui/Pages/PagePlayer.qml" line="249"/>
-        <location filename="../ui/Pages/PagePlayer.qml" line="1524"/>
+        <location filename="../ui/Pages/PagePlayer.qml" line="1559"/>
         <source>Theater mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../ui/Pages/PagePlayer.qml" line="249"/>
-        <location filename="../ui/Pages/PagePlayer.qml" line="1524"/>
+        <location filename="../ui/Pages/PagePlayer.qml" line="1559"/>
         <source>Default view</source>
         <translation type="unfinished"></translation>
     </message>
@@ -443,7 +511,7 @@ Telegram app</source>
     </message>
     <message>
         <location filename="../ui/Pages/PagePlayer.qml" line="932"/>
-        <location filename="../ui/Pages/PagePlayer.qml" line="1518"/>
+        <location filename="../ui/Pages/PagePlayer.qml" line="1553"/>
         <source>Take screenshot</source>
         <translation type="unfinished"></translation>
     </message>
@@ -530,169 +598,174 @@ Telegram app</source>
     </message>
     <message>
         <location filename="../ui/Pages/PagePlayer.qml" line="1360"/>
-        <location filename="../ui/Pages/PagePlayer.qml" line="1425"/>
+        <location filename="../ui/Pages/PagePlayer.qml" line="1460"/>
         <source>Show less</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../ui/Pages/PagePlayer.qml" line="1360"/>
-        <location filename="../ui/Pages/PagePlayer.qml" line="1425"/>
+        <location filename="../ui/Pages/PagePlayer.qml" line="1460"/>
         <source>Show more</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/Pages/PagePlayer.qml" line="1418"/>
+        <location filename="../ui/Pages/PagePlayer.qml" line="1453"/>
         <source>About this video</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/Pages/PagePlayer.qml" line="1455"/>
+        <location filename="../ui/Pages/PagePlayer.qml" line="1490"/>
         <source>Title</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/Pages/PagePlayer.qml" line="1456"/>
+        <location filename="../ui/Pages/PagePlayer.qml" line="1491"/>
         <source>Uploaded by</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/Pages/PagePlayer.qml" line="1457"/>
+        <location filename="../ui/Pages/PagePlayer.qml" line="1492"/>
         <source>Uploaded</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/Pages/PagePlayer.qml" line="1458"/>
+        <location filename="../ui/Pages/PagePlayer.qml" line="1493"/>
         <source>Duration</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/Pages/PagePlayer.qml" line="1459"/>
+        <location filename="../ui/Pages/PagePlayer.qml" line="1494"/>
         <source>Resolution</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/Pages/PagePlayer.qml" line="1460"/>
+        <location filename="../ui/Pages/PagePlayer.qml" line="1495"/>
         <source>Codec</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/Pages/PagePlayer.qml" line="1461"/>
+        <location filename="../ui/Pages/PagePlayer.qml" line="1496"/>
         <source>Decoder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/Pages/PagePlayer.qml" line="1465"/>
+        <location filename="../ui/Pages/PagePlayer.qml" line="1500"/>
         <source>File size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/Pages/PagePlayer.qml" line="1466"/>
+        <location filename="../ui/Pages/PagePlayer.qml" line="1501"/>
         <source>Content type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/Pages/PagePlayer.qml" line="1467"/>
+        <location filename="../ui/Pages/PagePlayer.qml" line="1502"/>
         <source>URL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/Pages/PagePlayer.qml" line="1498"/>
+        <location filename="../ui/Pages/PagePlayer.qml" line="1533"/>
         <source>Copy link</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/Pages/PagePlayer.qml" line="1503"/>
+        <location filename="../ui/Pages/PagePlayer.qml" line="1538"/>
         <source>Copy link at current time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/Pages/PagePlayer.qml" line="1509"/>
+        <location filename="../ui/Pages/PagePlayer.qml" line="1544"/>
         <source>Reveal downloaded file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/Pages/PagePlayer.qml" line="1529"/>
+        <location filename="../ui/Pages/PagePlayer.qml" line="1564"/>
         <source>Fullscreen</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/Pages/PagePlayer.qml" line="1566"/>
-        <location filename="../ui/Pages/PagePlayer.qml" line="1702"/>
+        <location filename="../ui/Pages/PagePlayer.qml" line="1601"/>
+        <location filename="../ui/Pages/PagePlayer.qml" line="1793"/>
         <source>Unknown</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/Pages/PagePlayer.qml" line="1602"/>
+        <location filename="../ui/Pages/PagePlayer.qml" line="1637"/>
         <source>Link copied</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/Pages/PagePlayer.qml" line="1611"/>
+        <location filename="../ui/Pages/PagePlayer.qml" line="1646"/>
         <source>Link copied at %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/Pages/PagePlayer.qml" line="1703"/>
+        <location filename="../ui/Pages/PagePlayer.qml" line="1716"/>
+        <source>Jumped to %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/Pages/PagePlayer.qml" line="1794"/>
         <source>By %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/Pages/PagePlayer.qml" line="1711"/>
+        <location filename="../ui/Pages/PagePlayer.qml" line="1802"/>
         <source>No additional information is available for this video.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/Pages/PagePlayer.qml" line="1723"/>
+        <location filename="../ui/Pages/PagePlayer.qml" line="1814"/>
         <source>Just now</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/Pages/PagePlayer.qml" line="1728"/>
+        <location filename="../ui/Pages/PagePlayer.qml" line="1819"/>
         <source>1 minute ago</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/Pages/PagePlayer.qml" line="1728"/>
+        <location filename="../ui/Pages/PagePlayer.qml" line="1819"/>
         <source>%1 minutes ago</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/Pages/PagePlayer.qml" line="1733"/>
+        <location filename="../ui/Pages/PagePlayer.qml" line="1824"/>
         <source>1 hour ago</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/Pages/PagePlayer.qml" line="1733"/>
+        <location filename="../ui/Pages/PagePlayer.qml" line="1824"/>
         <source>%1 hours ago</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/Pages/PagePlayer.qml" line="1736"/>
+        <location filename="../ui/Pages/PagePlayer.qml" line="1827"/>
         <source>Yesterday</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/Pages/PagePlayer.qml" line="1737"/>
+        <location filename="../ui/Pages/PagePlayer.qml" line="1828"/>
         <source>%1 days ago</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/Pages/PagePlayer.qml" line="1742"/>
+        <location filename="../ui/Pages/PagePlayer.qml" line="1833"/>
         <source>1 week ago</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/Pages/PagePlayer.qml" line="1742"/>
+        <location filename="../ui/Pages/PagePlayer.qml" line="1833"/>
         <source>%1 weeks ago</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/Pages/PagePlayer.qml" line="1747"/>
+        <location filename="../ui/Pages/PagePlayer.qml" line="1838"/>
         <source>1 month ago</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/Pages/PagePlayer.qml" line="1747"/>
+        <location filename="../ui/Pages/PagePlayer.qml" line="1838"/>
         <source>%1 months ago</source>
         <translation type="unfinished"></translation>
     </message>
@@ -723,7 +796,7 @@ Telegram app</source>
     </message>
     <message>
         <location filename="../ui/Pages/PagePlayer.qml" line="923"/>
-        <location filename="../ui/Pages/PagePlayer.qml" line="1463"/>
+        <location filename="../ui/Pages/PagePlayer.qml" line="1498"/>
         <source>CPU</source>
         <translation>CPU</translation>
     </message>

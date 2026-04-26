@@ -76,8 +76,8 @@ add_executable(plazma ${SOURCES} ${RESOURCES} src/models/user_model.cpp
         src/models/downloads_model.cpp)
 
 target_include_directories(plazma PRIVATE
-    ${CMAKE_SOURCE_DIR}
-    ${CMAKE_BINARY_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_BINARY_DIR}
     ${MPV_INCLUDE_DIRS}
 )
 target_compile_options(plazma PRIVATE ${MPV_CFLAGS_OTHER})

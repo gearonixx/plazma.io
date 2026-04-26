@@ -4,6 +4,15 @@
 #include <userver/storages/scylla/component.hpp>
 #include <userver/utils/daemon_run.hpp>
 
+#include "handlers/playlists/by_video.hpp"
+#include "handlers/playlists/create.hpp"
+#include "handlers/playlists/delete.hpp"
+#include "handlers/playlists/detail.hpp"
+#include "handlers/playlists/item_add.hpp"
+#include "handlers/playlists/item_remove.hpp"
+#include "handlers/playlists/items_list.hpp"
+#include "handlers/playlists/list.hpp"
+#include "handlers/playlists/rename.hpp"
 #include "handlers/user/auth_login.hpp"
 #include "handlers/videos/my_videos.hpp"
 #include "handlers/videos/video_create.hpp"
@@ -27,6 +36,15 @@ int main(int argc, char* argv[]) {
                               .Append<real_medium::handlers::videos::del::Handler>()
                               .Append<real_medium::handlers::videos::view::Handler>()
                               .Append<real_medium::handlers::videos::my::Handler>()
+                              .Append<real_medium::handlers::playlists::list::Handler>()
+                              .Append<real_medium::handlers::playlists::create::Handler>()
+                              .Append<real_medium::handlers::playlists::detail::Handler>()
+                              .Append<real_medium::handlers::playlists::rename::Handler>()
+                              .Append<real_medium::handlers::playlists::del::Handler>()
+                              .Append<real_medium::handlers::playlists::items_list::Handler>()
+                              .Append<real_medium::handlers::playlists::item_add::Handler>()
+                              .Append<real_medium::handlers::playlists::item_remove::Handler>()
+                              .Append<real_medium::handlers::playlists::by_video::Handler>()
                               .Append<real_medium::s3::S3Component>()
                               .Append<userver::clients::dns::Component>();
 

@@ -69,8 +69,8 @@ Page {
         anchors.margins: 8
         height: visible ? errText.implicitHeight + 18 : 0
         radius: 8
-        color: "#F8D7DA"
-        border.color: "#F5C2C7"
+        color: PlazmaStyle.color.errorBg
+        border.color: PlazmaStyle.color.errorBorder
         border.width: 1
         z: 5
 
@@ -83,7 +83,7 @@ Page {
                 id: errText
                 Layout.fillWidth: true
                 text: qsTr("Failed to load: %1").arg(VideoFeedModel.errorMessage)
-                color: "#842029"
+                color: PlazmaStyle.color.errorText
                 font.pixelSize: 12
                 wrapMode: Text.WordWrap
                 verticalAlignment: Text.AlignVCenter

@@ -43,11 +43,22 @@ public:
     [[nodiscard]] bool    usingDefaultDownloadPath() const;
 
 public slots:
-    // Open the native folder picker, validate the choice, and persist on
-    // success. Returns the chosen path on success; an empty string on
-    // cancel or validation failure (in which case downloadPathError is also
-    // emitted with a localized reason).
+    // Open the cross-platform Qt folder picker (`DontUseNativeDialog`),
+    // validate the choice, and persist on success. We deliberately bypass
+    // the OS-native dialog so the dropdown looks the same in light and
+    // dark mode, matching OBS Studio's "grey" picker UX rather than each
+    // platform's own file manager. Returns the chosen path on success;
+    // an empty string on cancel or validation failure (in which case
+    // downloadPathError is also emitted with a localized reason).
     Q_INVOKABLE QString chooseDownloadFolder();
+
+    // Manually-typed path commit. Same validation rules as the picker —
+    // must exist, be a directory, be writable. Returns true on success;
+    // on failure emits downloadPathError with a localized reason and
+    // leaves the persisted path untouched, so a typo never silently
+    // changes where downloads land. Expands a leading "~/" so users can
+    // paste shell-style paths.
+    Q_INVOKABLE bool setManualDownloadPath(QString path);
 
     // Switch back to the platform default by clearing the override.
     Q_INVOKABLE void resetDownloadPath();

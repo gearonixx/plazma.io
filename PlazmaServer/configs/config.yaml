@@ -124,6 +124,73 @@ components_manager:
       throttling_enabled: false
       url_trailing_slash: strict-match
 
+    # ── Playlists ─────────────────────────────────────────────────────────
+    handler-playlists-list:
+      path: /v1/playlists
+      method: GET
+      task_processor: main-task-processor
+      throttling_enabled: false
+      url_trailing_slash: strict-match
+
+    handler-playlists-create:
+      path: /v1/playlists
+      method: POST
+      task_processor: main-task-processor
+      throttling_enabled: false
+      url_trailing_slash: strict-match
+      max_request_size: 16384
+
+    handler-playlists-detail:
+      path: /v1/playlists/{id}
+      method: GET
+      task_processor: main-task-processor
+      throttling_enabled: false
+      url_trailing_slash: strict-match
+
+    handler-playlists-rename:
+      path: /v1/playlists/{id}
+      method: PATCH
+      task_processor: main-task-processor
+      throttling_enabled: false
+      url_trailing_slash: strict-match
+      max_request_size: 16384
+
+    handler-playlists-delete:
+      path: /v1/playlists/{id}
+      method: DELETE
+      task_processor: main-task-processor
+      throttling_enabled: false
+      url_trailing_slash: strict-match
+
+    handler-playlists-items-list:
+      path: /v1/playlists/{id}/items
+      method: GET
+      task_processor: main-task-processor
+      throttling_enabled: false
+      url_trailing_slash: strict-match
+
+    handler-playlists-item-add:
+      path: /v1/playlists/{id}/items
+      method: POST
+      task_processor: main-task-processor
+      throttling_enabled: false
+      url_trailing_slash: strict-match
+      max_request_size: 16384
+
+    handler-playlists-item-remove:
+      path: /v1/playlists/{id}/items/{video_id}
+      method: DELETE
+      task_processor: main-task-processor
+      throttling_enabled: false
+      url_trailing_slash: strict-match
+
+    handler-playlists-by-video:
+      path: /v1/users/me/playlists/by_video/{video_id}
+      method: GET
+      task_processor: main-task-processor
+      throttling_enabled: false
+      url_trailing_slash: strict-match
+
     s3-client: {}
 
     es-search:

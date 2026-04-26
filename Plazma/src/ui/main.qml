@@ -12,11 +12,11 @@ import Td 1.0
 
 ApplicationWindow {
     id: root
-    width: 780
+    width: 900
     height: 540
-    minimumWidth: 780
+    minimumWidth: 900
     minimumHeight: 540
-    maximumWidth: 780
+    maximumWidth: 900
     maximumHeight: 540
     visible: true
     title: "Plazma"
@@ -43,11 +43,29 @@ ApplicationWindow {
     }
 
     Component.onCompleted: {
+        // Cross-module theme wiring. PlazmaStyle reads TdTheme.dark
+        // directly (cross-module imports are unproblematic), but
+        // TdPalette lives inside the Td module alongside TdTheme — to
+        // avoid a self-import on the qmldir we bind here from main.qml
+        // at boot. One assignment, lives for the app lifetime.
+        TdPalette.dark = Qt.binding(function() { return TdTheme.dark })
+
         // TdLayerManager hosts every modal layer (settings, future
-        // confirmations, …). Anchor it to the application root so layers
-        // overlay both the StackView pages and the global DownloadBar.
-        TdLayerManager.attach(root)
+        // confirmations, …). It expects an Item to anchor into — passing
+        // the ApplicationWindow itself silently no-ops (Window is not an
+        // Item) so we attach to a dedicated full-window layerHost on top
+        // of the StackView and download bar.
+        TdLayerManager.attach(layerHost)
         reroute()
+    }
+
+    // Standard Preferences shortcut. Ctrl+, on Linux/Windows, ⌘+, on macOS
+    // (matches every native macOS app + most desktop apps via QKeySequence
+    // → Qt::Key_Comma + ControlModifier on Linux, MetaModifier on macOS).
+    Shortcut {
+        sequences: [StandardKey.Preferences, "Ctrl+,"]
+        context: Qt.ApplicationShortcut
+        onActivated: TdLayerManager.show("qrc:/ui/Boxes/SettingsBox.qml", {})
     }
 
     Connections {
@@ -159,5 +177,14 @@ ApplicationWindow {
             downloadToast.opacity = 1.0
             downloadToastTimer.restart()
         }
+    }
+
+    // Modal layer host. Sits above the StackView, the DownloadBar and the
+    // download toast so dialogs always paint on top. TdLayerManager
+    // populates this with its layer stack at runtime.
+    Item {
+        id: layerHost
+        anchors.fill: parent
+        z: 900
     }
 }

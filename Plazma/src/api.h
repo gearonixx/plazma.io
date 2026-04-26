@@ -115,6 +115,51 @@ public:
     );
     void deleteVideo(const QString& id, Fn<void()> onSuccess = {}, Fn<void(int, QString)> onError = {});
 
+    // ─── Playlists ────────────────────────────────────────────────────────
+    //
+    // All playlist endpoints require auth and are scoped to the caller. The
+    // wire format is documented authoritatively in
+    // `PlazmaServer/docs/playlists.md`; this header keeps callsite ergonomics
+    // small and matches the existing `done/fail` callback shape.
+    //
+    // The client supplies its own UUID v7 for `createPlaylist` so that
+    // PlaylistsModel can preserve its synchronous `createPlaylist(name) →
+    // id` contract — the id is generated locally up front, then this call
+    // upserts it on the server. See playlists.md §10 for idempotency.
+    void listPlaylists(
+        Fn<void(QJsonArray /*playlists*/)> onSuccess,
+        Fn<void(int, QString)> onError = {}
+    );
+    void createPlaylistRemote(
+        const QString& id,
+        const QString& name,
+        Fn<void(QJsonObject /*playlist*/)> onSuccess = {},
+        Fn<void(int, QString)> onError = {}
+    );
+    void renamePlaylistRemote(
+        const QString& id,
+        const QString& newName,
+        Fn<void(QJsonObject /*playlist*/)> onSuccess = {},
+        Fn<void(int, QString)> onError = {}
+    );
+    void deletePlaylistRemote(
+        const QString& id,
+        Fn<void()> onSuccess = {},
+        Fn<void(int, QString)> onError = {}
+    );
+    void addPlaylistItem(
+        const QString& playlistId,
+        const QJsonObject& itemSnapshot,  // {video_id, title, url, …} — see playlists.md §3.7
+        Fn<void(QJsonObject /*item*/, QJsonObject /*playlist*/)> onSuccess = {},
+        Fn<void(int, QString)> onError = {}
+    );
+    void removePlaylistItem(
+        const QString& playlistId,
+        const QString& videoId,
+        Fn<void()> onSuccess = {},
+        Fn<void(int, QString)> onError = {}
+    );
+
     // Streaming GET for offline downloads. Returns the underlying QNetworkReply
     // so the caller can wire readyRead()/downloadProgress()/finished() to write
     // bytes incrementally to disk instead of buffering the whole file in RAM.

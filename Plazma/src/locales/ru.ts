@@ -72,118 +72,118 @@
 <context>
     <name>DownloadsModel</name>
     <message>
-        <location filename="../models/downloads_model.cpp" line="750"/>
+        <location filename="../models/downloads_model.cpp" line="748"/>
         <source>Can&apos;t write to %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../models/downloads_model.cpp" line="706"/>
-        <location filename="../models/downloads_model.cpp" line="754"/>
-        <location filename="../models/downloads_model.cpp" line="775"/>
-        <location filename="../models/downloads_model.cpp" line="1060"/>
-        <location filename="../models/downloads_model.cpp" line="1071"/>
-        <location filename="../models/downloads_model.cpp" line="1081"/>
+        <location filename="../models/downloads_model.cpp" line="704"/>
+        <location filename="../models/downloads_model.cpp" line="752"/>
+        <location filename="../models/downloads_model.cpp" line="773"/>
+        <location filename="../models/downloads_model.cpp" line="1058"/>
+        <location filename="../models/downloads_model.cpp" line="1068"/>
+        <location filename="../models/downloads_model.cpp" line="1078"/>
         <source>Download failed: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../models/downloads_model.cpp" line="267"/>
+        <location filename="../models/downloads_model.cpp" line="265"/>
         <source>%1/s</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../models/downloads_model.cpp" line="275"/>
+        <location filename="../models/downloads_model.cpp" line="273"/>
         <source>%1 / %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../models/downloads_model.cpp" line="295"/>
+        <location filename="../models/downloads_model.cpp" line="293"/>
         <source>almost done</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../models/downloads_model.cpp" line="296"/>
+        <location filename="../models/downloads_model.cpp" line="294"/>
         <source>%1s left</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../models/downloads_model.cpp" line="300"/>
+        <location filename="../models/downloads_model.cpp" line="298"/>
         <source>%1m %2s left</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../models/downloads_model.cpp" line="300"/>
+        <location filename="../models/downloads_model.cpp" line="298"/>
         <source>%1m left</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../models/downloads_model.cpp" line="304"/>
+        <location filename="../models/downloads_model.cpp" line="302"/>
         <source>%1h %2m left</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../models/downloads_model.cpp" line="304"/>
+        <location filename="../models/downloads_model.cpp" line="302"/>
         <source>%1h left</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../models/downloads_model.cpp" line="383"/>
+        <location filename="../models/downloads_model.cpp" line="381"/>
         <source>Can&apos;t download — this video has no source URL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../models/downloads_model.cpp" line="640"/>
+        <location filename="../models/downloads_model.cpp" line="638"/>
         <source>File is no longer available</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../models/downloads_model.cpp" line="701"/>
+        <location filename="../models/downloads_model.cpp" line="699"/>
         <source>Not enough disk space (%1 free, %2 needed)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../models/downloads_model.cpp" line="771"/>
+        <location filename="../models/downloads_model.cpp" line="769"/>
         <source>Network is unavailable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../models/downloads_model.cpp" line="799"/>
+        <location filename="../models/downloads_model.cpp" line="797"/>
         <source>Downloading “%1”</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../models/downloads_model.cpp" line="799"/>
-        <location filename="../models/downloads_model.cpp" line="1088"/>
+        <location filename="../models/downloads_model.cpp" line="797"/>
+        <location filename="../models/downloads_model.cpp" line="1085"/>
         <source>video</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../models/downloads_model.cpp" line="1041"/>
+        <location filename="../models/downloads_model.cpp" line="1039"/>
         <source>Retrying… (%1 / %2)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../models/downloads_model.cpp" line="1055"/>
+        <location filename="../models/downloads_model.cpp" line="1053"/>
         <source>HTTP %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../models/downloads_model.cpp" line="1065"/>
+        <location filename="../models/downloads_model.cpp" line="1063"/>
         <source>Unknown error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../models/downloads_model.cpp" line="1076"/>
+        <location filename="../models/downloads_model.cpp" line="1073"/>
         <source>File handle vanished</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../models/downloads_model.cpp" line="1079"/>
+        <location filename="../models/downloads_model.cpp" line="1076"/>
         <source>Could not finalize the downloaded file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../models/downloads_model.cpp" line="1088"/>
+        <location filename="../models/downloads_model.cpp" line="1085"/>
         <source>Saved “%1”</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1314,18 +1314,48 @@ We&apos;ll push it to the server and add it to the feed.</source>
 <context>
     <name>PlaylistsModel</name>
     <message>
-        <location filename="../models/playlists_model.cpp" line="78"/>
+        <location filename="../models/playlists_model.cpp" line="91"/>
         <source>Choose a different name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../models/playlists_model.cpp" line="154"/>
+        <location filename="../models/playlists_model.cpp" line="126"/>
+        <source>Could not create playlist</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../models/playlists_model.cpp" line="167"/>
+        <source>Could not rename playlist</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../models/playlists_model.cpp" line="204"/>
+        <source>Could not delete playlist</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../models/playlists_model.cpp" line="226"/>
         <source>Already in “%1”</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../models/playlists_model.cpp" line="169"/>
+        <location filename="../models/playlists_model.cpp" line="236"/>
         <source>Saved to “%1”</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../models/playlists_model.cpp" line="269"/>
+        <source>Could not save video</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../models/playlists_model.cpp" line="303"/>
+        <source>Could not remove video</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../models/playlists_model.cpp" line="413"/>
+        <source>Could not refresh playlists</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1509,27 +1539,57 @@ We&apos;ll push it to the server and add it to the feed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/Boxes/SettingsBox.qml" line="47"/>
-        <source>Downloads</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/Boxes/SettingsBox.qml" line="57"/>
-        <source>Save videos to</source>
+        <location filename="../ui/Boxes/SettingsBox.qml" line="54"/>
+        <source>Appearance</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../ui/Boxes/SettingsBox.qml" line="68"/>
+        <source>Theme</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/Boxes/SettingsBox.qml" line="88"/>
+        <source>Light</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/Boxes/SettingsBox.qml" line="89"/>
+        <source>Auto</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/Boxes/SettingsBox.qml" line="90"/>
+        <source>Dark</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/Boxes/SettingsBox.qml" line="167"/>
+        <source>Downloads</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/Boxes/SettingsBox.qml" line="192"/>
+        <source>Save videos to</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/Boxes/SettingsBox.qml" line="214"/>
+        <source>Browse</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/Boxes/SettingsBox.qml" line="323"/>
         <source>Open in file manager</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/Boxes/SettingsBox.qml" line="78"/>
+        <location filename="../ui/Boxes/SettingsBox.qml" line="333"/>
         <source>Reset to default location</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/Boxes/SettingsBox.qml" line="112"/>
+        <location filename="../ui/Boxes/SettingsBox.qml" line="367"/>
         <source>Done</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1537,17 +1597,27 @@ We&apos;ll push it to the server and add it to the feed.</source>
 <context>
     <name>SettingsModel</name>
     <message>
-        <location filename="../models/settings_model.cpp" line="50"/>
+        <location filename="../models/settings_model.cpp" line="109"/>
         <source>Choose download folder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../models/settings_model.cpp" line="58"/>
+        <location filename="../models/settings_model.cpp" line="69"/>
         <source>That folder doesn&apos;t exist.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../models/settings_model.cpp" line="62"/>
+        <location filename="../models/settings_model.cpp" line="55"/>
+        <source>Folder path can&apos;t be empty.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../models/settings_model.cpp" line="73"/>
+        <source>That path isn&apos;t a folder.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../models/settings_model.cpp" line="77"/>
         <source>Plazma can&apos;t write to that folder.</source>
         <translation type="unfinished"></translation>
     </message>

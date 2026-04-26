@@ -56,15 +56,13 @@ bool isTransientNetworkError(QNetworkReply::NetworkError nerr) {
         case QNetworkReply::ConnectionRefusedError:
         case QNetworkReply::RemoteHostClosedError:
         case QNetworkReply::HostNotFoundError:
+        case QNetworkReply::TimeoutError:
         case QNetworkReply::ProxyConnectionRefusedError:
         case QNetworkReply::ProxyConnectionClosedError:
         case QNetworkReply::ProxyTimeoutError:
             return true;
         default:
-            // Qt 6 added OperationTimeoutError but the local headers may be
-            // older; compare numerically as a defensive fallback. The
-            // numeric value is stable within Qt 6.
-            return static_cast<int>(nerr) == 5;  // OperationTimeoutError
+            return false;
     }
 }
 
@@ -1063,8 +1061,7 @@ void DownloadsModel::handleFinished(Entry& e) {
         if (e.file) { e.file->discard(); e.file.reset(); }
         const auto msg = reply && !reply->errorString().isEmpty()
             ? reply->errorString() : tr("Unknown error");
-        // OperationTimeoutError numeric value 5 — see isTransientNetworkError.
-        const auto reason = (static_cast<int>(nerr) == 5)
+        const auto reason = (nerr == QNetworkReply::TimeoutError)
             ? ErrorReason::ErrorTimeout
             : ErrorReason::ErrorNetwork;
         setStatus(e, Status::Failed, msg, reason);

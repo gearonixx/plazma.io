@@ -329,8 +329,8 @@ Page {
         anchors.topMargin: 8
         height: visible ? toastText.implicitHeight + 18 : 0
         radius: 8
-        color: root.toastIsError ? "#F8D7DA" : PlazmaStyle.color.softAmber
-        border.color: root.toastIsError ? "#F5C2C7" : PlazmaStyle.color.warmGold
+        color: root.toastIsError ? PlazmaStyle.color.errorBg : PlazmaStyle.color.softAmber
+        border.color: root.toastIsError ? PlazmaStyle.color.errorBorder : PlazmaStyle.color.warmGold
         border.width: 1
         z: 5
 
@@ -340,7 +340,7 @@ Page {
             anchors.leftMargin: 12
             anchors.rightMargin: 12
             text: root.toastText
-            color: root.toastIsError ? "#842029" : PlazmaStyle.color.textPrimary
+            color: root.toastIsError ? PlazmaStyle.color.errorText : PlazmaStyle.color.textPrimary
             font.pixelSize: 12
             wrapMode: Text.WordWrap
             verticalAlignment: Text.AlignVCenter

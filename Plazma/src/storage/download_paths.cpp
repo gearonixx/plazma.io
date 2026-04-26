@@ -104,6 +104,7 @@ QString computeDestPath(
     const auto ext = extensionFor(sourceUrl, mime);
 
     QString candidate = QStringLiteral("%1/%2.%3").arg(root, base, ext);
+
     int n = 1;
     while (QFile::exists(candidate) || QFile::exists(candidate + QStringLiteral(".part"))) {
         candidate = QStringLiteral("%1/%2 (%3).%4").arg(root, base).arg(n).arg(ext);

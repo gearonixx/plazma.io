@@ -27,29 +27,66 @@
         <file>ui/Modules/Style/PlazmaStyle.qml</file>
         <file>ui/Modules/Style/qmldir</file>
 
+        <!-- Td module — the qmldir is parsed eagerly and every singleton it
+             lists is validated at module-import time, so this list must
+             stay in lock-step with src/ui/Modules/Td/qmldir. Missing one
+             singleton file will cascade-fail every `import Td 1.0`. -->
         <file>ui/Modules/Td/qmldir</file>
+        <file>ui/Modules/Td/TdAnimations.js</file>
+
         <file>ui/Modules/Td/TdPalette.qml</file>
         <file>ui/Modules/Td/TdStyle.qml</file>
-        <file>ui/Modules/Td/TdAnimations.js</file>
+        <file>ui/Modules/Td/TdTheme.qml</file>
+        <file>ui/Modules/Td/TdLayerManager.qml</file>
+        <file>ui/Modules/Td/TdNotifications.qml</file>
+
         <file>ui/Modules/Td/TdAbstractButton.qml</file>
         <file>ui/Modules/Td/TdRipple.qml</file>
+        <file>ui/Modules/Td/TdIcon.qml</file>
         <file>ui/Modules/Td/TdRoundButton.qml</file>
         <file>ui/Modules/Td/TdIconButton.qml</file>
-        <file>ui/Modules/Td/TdIcon.qml</file>
-        <file>ui/Modules/Td/TdSpinner.qml</file>
+        <file>ui/Modules/Td/TdFlatButton.qml</file>
         <file>ui/Modules/Td/TdFlatLabel.qml</file>
+        <file>ui/Modules/Td/TdLink.qml</file>
+
         <file>ui/Modules/Td/TdInputField.qml</file>
+        <file>ui/Modules/Td/TdSearchInput.qml</file>
+        <file>ui/Modules/Td/TdCheckbox.qml</file>
+        <file>ui/Modules/Td/TdRadioButton.qml</file>
+        <file>ui/Modules/Td/TdToggle.qml</file>
+        <file>ui/Modules/Td/TdSlider.qml</file>
+        <file>ui/Modules/Td/TdProgressBar.qml</file>
+        <file>ui/Modules/Td/TdSpinner.qml</file>
+
         <file>ui/Modules/Td/TdScrollArea.qml</file>
+        <file>ui/Modules/Td/TdScrollShadow.qml</file>
         <file>ui/Modules/Td/TdShadow.qml</file>
         <file>ui/Modules/Td/TdSeparator.qml</file>
+
         <file>ui/Modules/Td/TdPopupMenu.qml</file>
         <file>ui/Modules/Td/TdMenuItem.qml</file>
         <file>ui/Modules/Td/TdMenuSeparator.qml</file>
+
         <file>ui/Modules/Td/TdBoxContent.qml</file>
         <file>ui/Modules/Td/TdConfirmBox.qml</file>
-        <file>ui/Modules/Td/TdLayerManager.qml</file>
+
+        <file>ui/Modules/Td/TdTabBar.qml</file>
+        <file>ui/Modules/Td/TdTab.qml</file>
+
         <file>ui/Modules/Td/TdSettingsRow.qml</file>
         <file>ui/Modules/Td/TdSectionHeader.qml</file>
+        <file>ui/Modules/Td/TdInfoRow.qml</file>
+        <file>ui/Modules/Td/TdEmptyState.qml</file>
+
+        <file>ui/Modules/Td/TdAvatar.qml</file>
+        <file>ui/Modules/Td/TdBadge.qml</file>
+        <file>ui/Modules/Td/TdTooltip.qml</file>
+        <file>ui/Modules/Td/TdToast.qml</file>
+
+        <file>ui/Modules/Td/TdSidebarItem.qml</file>
+        <file>ui/Modules/Td/TdNavigationDrawer.qml</file>
+        <file>ui/Modules/Td/TdTitleBar.qml</file>
+
+        <file>ui/Modules/Td/TdShortcut.qml</file>
     </qresource>
 </RCC>
-

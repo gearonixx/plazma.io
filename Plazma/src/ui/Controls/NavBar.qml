@@ -227,10 +227,10 @@ Rectangle {
         id: searchSlot
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
-        height: 40
+        height: 37
 
         readonly property int sideGutter: 24
-        readonly property int targetWidth: 660
+        readonly property int targetWidth: 610
         readonly property int minWidth: 240
         readonly property int available: Math.max(
             searchSlot.minWidth,
@@ -465,7 +465,7 @@ Rectangle {
         signal triggered()
 
         Layout.preferredHeight: 36
-        // Size to content so the three tabs fit on a 780px-fixed window
+        // Size to content so the three tabs fit on the 900px-fixed window
         // without starving the center search.
         Layout.preferredWidth: tabLabel.implicitWidth + 24
         radius: 18

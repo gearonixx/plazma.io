@@ -9,9 +9,9 @@ import QtQuick
 // so any code reading it can be cross-referenced against tdesktop's
 // `colors.palette` without translation.
 //
-// Light theme is the default. Set `dark = true` (or use `TdTheme`) to
-// swap into the dark palette tokens. Bindings driven from these
-// properties update live.
+// `dark` is wired to TdTheme.dark from main.qml at startup — kept as a
+// plain (non-readonly) property here so the Td module has no self-import
+// (which would create a circular qmldir load with TdTheme).
 
 QtObject {
     id: palette

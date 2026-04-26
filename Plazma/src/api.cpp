@@ -298,6 +298,182 @@ void Api::deleteVideo(const QString& id, Fn<void()> onSuccess, Fn<void(int, QStr
         .send();
 }
 
+// ─── Playlists ──────────────────────────────────────────────────────────────
+//
+// Playlist endpoints don't fit the fixed-path Endpoint enum (every route
+// except `GET /v1/playlists` has either `{id}` or `{id}/items[/{video_id}]`
+// in the path), so we build URLs directly here, the same way renameVideo
+// and deleteVideo do above. Each method packs the body, fires through
+// RequestBuilder, and unwraps the response with the existing validators.
+namespace {
+
+QNetworkRequest buildPlaylistRequest(QString path, const QByteArray& authToken) {
+    QNetworkRequest req(QUrl(QStringLiteral("http://localhost:8080") + std::move(path)));
+    req.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    req.setRawHeader("Connection", "close");
+    if (!authToken.isEmpty()) req.setRawHeader("Authorization", "Bearer " + authToken);
+    return req;
+}
+
+}  // namespace
+
+void Api::listPlaylists(Fn<void(QJsonArray)> onSuccess, Fn<void(int, QString)> onError) {
+    Q_ASSERT(nam_ != nullptr);
+
+    QNetworkRequest req(QUrl(QString(kBaseUrl) + QStringLiteral("/v1/playlists")));
+    req.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    req.setRawHeader("Connection", "close");
+    applyAuth(req);
+
+    qDebug() << "[API] GET" << req.url().toString(QUrl::RemoveUserInfo);
+
+    RequestBuilder(nam_, req, HttpMethod::kGet, QByteArray{})
+        .done(validators::resolveArrayField(
+            "playlists", "listPlaylists",
+            [resolve = std::move(onSuccess)](const QJsonArray& playlists) {
+                qDebug() << "[API] listPlaylists =>" << playlists.size() << "items";
+                if (resolve) resolve(playlists);
+            }
+        ))
+        .fail([reject = std::move(onError)](int code, const QString& error) {
+            qWarning() << "[API] listPlaylists failed:" << code << error;
+            if (reject) reject(code, error);
+        })
+        .send();
+}
+
+void Api::createPlaylistRemote(
+    const QString& id,
+    const QString& name,
+    Fn<void(QJsonObject)> onSuccess,
+    Fn<void(int, QString)> onError
+) {
+    Q_ASSERT(nam_ != nullptr);
+
+    auto req = buildPlaylistRequest(QStringLiteral("/v1/playlists"), authToken_);
+    const auto body =
+        QJsonDocument(QJsonObject{{"id", id}, {"name", name}}).toJson(QJsonDocument::Compact);
+
+    qDebug() << "[API] POST" << req.url().toString(QUrl::RemoveUserInfo) << "id=" << id;
+
+    RequestBuilder(nam_, req, HttpMethod::kPost, body)
+        .done(validators::resolveObjectField(
+            "playlist", "createPlaylistRemote",
+            [resolve = std::move(onSuccess)](const QJsonObject& playlist) {
+                if (resolve) resolve(playlist);
+            }
+        ))
+        .fail([reject = std::move(onError), id](int code, const QString& error) {
+            qWarning() << "[API] createPlaylistRemote failed:" << id << code << error;
+            if (reject) reject(code, error);
+        })
+        .send();
+}
+
+void Api::renamePlaylistRemote(
+    const QString& id,
+    const QString& newName,
+    Fn<void(QJsonObject)> onSuccess,
+    Fn<void(int, QString)> onError
+) {
+    Q_ASSERT(nam_ != nullptr);
+
+    auto req = buildPlaylistRequest(QStringLiteral("/v1/playlists/") + id, authToken_);
+    const auto body = QJsonDocument(QJsonObject{{"name", newName}}).toJson(QJsonDocument::Compact);
+
+    qDebug() << "[API] PATCH" << req.url().toString(QUrl::RemoveUserInfo);
+
+    RequestBuilder(nam_, req, HttpMethod::kPatch, body)
+        .done(validators::resolveObjectField(
+            "playlist", "renamePlaylistRemote",
+            [resolve = std::move(onSuccess)](const QJsonObject& playlist) {
+                if (resolve) resolve(playlist);
+            }
+        ))
+        .fail([reject = std::move(onError), id](int code, const QString& error) {
+            qWarning() << "[API] renamePlaylistRemote failed:" << id << code << error;
+            if (reject) reject(code, error);
+        })
+        .send();
+}
+
+void Api::deletePlaylistRemote(const QString& id, Fn<void()> onSuccess, Fn<void(int, QString)> onError) {
+    Q_ASSERT(nam_ != nullptr);
+
+    auto req = buildPlaylistRequest(QStringLiteral("/v1/playlists/") + id, authToken_);
+
+    qDebug() << "[API] DELETE" << req.url().toString(QUrl::RemoveUserInfo);
+
+    RequestBuilder(nam_, req, HttpMethod::kDelete, QByteArray{})
+        .done([resolve = std::move(onSuccess), id](const QJsonObject&) {
+            qDebug() << "[API] deletePlaylistRemote ok:" << id;
+            if (resolve) resolve();
+        })
+        .fail([reject = std::move(onError), id](int code, const QString& error) {
+            qWarning() << "[API] deletePlaylistRemote failed:" << id << code << error;
+            if (reject) reject(code, error);
+        })
+        .send();
+}
+
+void Api::addPlaylistItem(
+    const QString& playlistId,
+    const QJsonObject& itemSnapshot,
+    Fn<void(QJsonObject, QJsonObject)> onSuccess,
+    Fn<void(int, QString)> onError
+) {
+    Q_ASSERT(nam_ != nullptr);
+
+    auto req = buildPlaylistRequest(
+        QStringLiteral("/v1/playlists/") + playlistId + QStringLiteral("/items"), authToken_
+    );
+    const auto body = QJsonDocument(itemSnapshot).toJson(QJsonDocument::Compact);
+
+    qDebug() << "[API] POST" << req.url().toString(QUrl::RemoveUserInfo)
+             << "video_id=" << itemSnapshot.value("video_id").toString();
+
+    RequestBuilder(nam_, req, HttpMethod::kPost, body)
+        .done([resolve = std::move(onSuccess), playlistId](const QJsonObject& json) {
+            const auto item = json.value("item").toObject();
+            const auto playlist = json.value("playlist").toObject();
+            if (item.isEmpty()) {
+                qWarning() << "[API] addPlaylistItem: response missing 'item'";
+                return;
+            }
+            if (resolve) resolve(item, playlist);
+        })
+        .fail([reject = std::move(onError), playlistId](int code, const QString& error) {
+            qWarning() << "[API] addPlaylistItem failed:" << playlistId << code << error;
+            if (reject) reject(code, error);
+        })
+        .send();
+}
+
+void Api::removePlaylistItem(
+    const QString& playlistId,
+    const QString& videoId,
+    Fn<void()> onSuccess,
+    Fn<void(int, QString)> onError
+) {
+    Q_ASSERT(nam_ != nullptr);
+
+    auto req = buildPlaylistRequest(
+        QStringLiteral("/v1/playlists/") + playlistId + QStringLiteral("/items/") + videoId, authToken_
+    );
+
+    qDebug() << "[API] DELETE" << req.url().toString(QUrl::RemoveUserInfo);
+
+    RequestBuilder(nam_, req, HttpMethod::kDelete, QByteArray{})
+        .done([resolve = std::move(onSuccess)](const QJsonObject&) {
+            if (resolve) resolve();
+        })
+        .fail([reject = std::move(onError), playlistId, videoId](int code, const QString& error) {
+            qWarning() << "[API] removePlaylistItem failed:" << playlistId << videoId << code << error;
+            if (reject) reject(code, error);
+        })
+        .send();
+}
+
 void Api::fetchVideos(const QString& query, Fn<void(QJsonArray)> onSuccess, Fn<void(int, QString)> onError) {
     QUrlQuery queryParams;
     if (!query.isEmpty()) queryParams.addQueryItem("q", query);

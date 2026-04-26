@@ -77,7 +77,7 @@ void CoreController::initControllers() {
     profileModel_.reset(new ProfileModel(session_.data(), &session_->api()));
     qmlRegisterSingletonInstance<ProfileModel>(APPLICATION_ID, 1, 0, "ProfileModel", profileModel_.data());
 
-    playlistsModel_.reset(new PlaylistsModel());
+    playlistsModel_.reset(new PlaylistsModel(&session_->api(), session_.data()));
     qmlRegisterSingletonInstance<PlaylistsModel>(APPLICATION_ID, 1, 0, "PlaylistsModel", playlistsModel_.data());
 
     downloadsModel_.reset(new DownloadsModel(&session_->api(), nullptr, settings_.get()));

@@ -1,20 +1,24 @@
 pragma Singleton
 
 import QtQuick
-import Qt.labs.settings 1.0
+import QtCore
 
-// TdTheme — singleton driver that owns the dark/light decision and
-// pushes it into TdPalette. Mirrors the role of `Window::Theme` in
-// tdesktop (window/themes/window_theme.h) but trimmed to what the
-// QML layer needs.
+// TdTheme — single source of truth for the active theme. Mirrors the
+// role of `Window::Theme` in tdesktop (window/themes/window_theme.h),
+// trimmed to the QML layer's needs.
 //
 // Modes:
-//   - Light   :  always light
-//   - Dark    :  always dark
-//   - System  :  follow Qt.styleHints.colorScheme (Qt 6.5+)
+//   Light   :  always light
+//   Dark    :  always dark
+//   System  :  follow Qt.styleHints.colorScheme (Qt 6.5+)
 //
-// The choice is persisted via Qt.labs.settings so users keep their
-// preference across launches.
+// The choice persists via QtCore.Settings (the post-deprecation
+// replacement for Qt.labs.settings) so users keep their preference
+// across launches.
+//
+// Consumers (TdPalette, PlazmaStyle, individual screens) bind directly
+// to `TdTheme.dark`, so flipping `mode` cascades through every palette
+// without TdTheme having to know they exist.
 
 QtObject {
     id: theme
@@ -28,39 +32,25 @@ QtObject {
         case TdTheme.Light: return false;
         case TdTheme.Dark:  return true;
         default:
-            // Qt.styleHints.colorScheme: 1 = Light, 2 = Dark
+            // Qt.ColorScheme: Unknown=0, Light=1, Dark=2. The property is
+            // notify-able in Qt 6.5+, so this binding re-evaluates when
+            // the OS scheme changes — no manual hook needed. Compared
+            // numerically rather than via `Qt.Dark` to avoid the
+            // GlobalColor palette enum, which is unrelated.
             return Qt.styleHints && Qt.styleHints.colorScheme === 2;
         }
     }
 
-    onDarkChanged: {
-        // Bind into TdPalette without import cycle by deferred lookup
-        const p = Qt.createQmlObject(
-            'import Td 1.0; QtObject { property var pal: TdPalette }',
-            theme, 'TdThemeBindHelper');
-        if (p && p.pal) p.pal.dark = dark;
-        if (p) p.destroy();
-    }
+    function toggleDark() { mode = dark ? TdTheme.Light : TdTheme.Dark }
+    function setLight()   { mode = TdTheme.Light }
+    function setDark()    { mode = TdTheme.Dark }
+    function setSystem()  { mode = TdTheme.System }
 
-    function toggleDark() {
-        mode = dark ? TdTheme.Light : TdTheme.Dark;
-    }
-
-    function setLight()  { mode = TdTheme.Light }
-    function setDark()   { mode = TdTheme.Dark }
-    function setSystem() { mode = TdTheme.System }
-
+    // Persistence. The aliased property hook restores `mode` before
+    // anything reads `dark`, so first paint already uses the right
+    // palette.
     property Settings _store: Settings {
         category: "TdTheme"
         property alias mode: theme.mode
-    }
-
-    Component.onCompleted: {
-        // Apply once on startup
-        const p = Qt.createQmlObject(
-            'import Td 1.0; QtObject { property var pal: TdPalette }',
-            theme, 'TdThemeBindHelper');
-        if (p && p.pal) p.pal.dark = dark;
-        if (p) p.destroy();
     }
 }

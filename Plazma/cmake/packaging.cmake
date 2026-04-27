@@ -7,6 +7,30 @@ install(TARGETS plazma
     BUNDLE  DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
+if(WIN32)
+    # Bundle libmpv runtime DLL alongside the executable
+    if(DEFINED ENV{MPV_DIR} AND EXISTS "$ENV{MPV_DIR}/libmpv-2.dll")
+        install(FILES "$ENV{MPV_DIR}/libmpv-2.dll"
+                DESTINATION ${CMAKE_INSTALL_BINDIR})
+    endif()
+
+    # Run windeployqt against the installed binary so Qt DLLs + QML modules
+    # land next to plazma.exe — required for NSIS / ZIP packages to run on
+    # a machine without Qt installed.
+    find_program(QT_WINDEPLOYQT_EXECUTABLE windeployqt
+                 HINTS "${Qt6_DIR}/../../../bin")
+    if(QT_WINDEPLOYQT_EXECUTABLE)
+        install(CODE "
+            message(STATUS \"Running windeployqt for plazma.exe\")
+            execute_process(COMMAND \"${QT_WINDEPLOYQT_EXECUTABLE}\"
+                --release --no-translations --no-system-d3d-compiler
+                --qmldir \"${CMAKE_CURRENT_SOURCE_DIR}/src\"
+                \"\${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}/plazma.exe\"
+                COMMAND_ERROR_IS_FATAL ANY)
+        ")
+    endif()
+endif()
+
 if(UNIX AND NOT APPLE)
     install(FILES
         ${CMAKE_CURRENT_SOURCE_DIR}/packaging/dev.gearonixx.plazma.desktop

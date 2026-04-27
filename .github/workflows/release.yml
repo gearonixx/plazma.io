@@ -110,7 +110,7 @@ jobs:
           host: windows
           target: desktop
           arch: win64_msvc2019_64
-          modules: 'qtdeclarative qtimageformats'
+          modules: 'qtimageformats'
           cache: true
 
       - name: Setup MSVC dev environment

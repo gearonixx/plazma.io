@@ -120,14 +120,36 @@ jobs:
         with:
           arch: x64
 
-      - name: Cache vcpkg packages
+      - name: Cache vcpkg packages (openssl, zlib, gperf)
         uses: actions/cache@v4
         with:
           path: C:/vcpkg/installed
-          key: vcpkg-tdlib-${{ runner.arch }}-v1
+          key: vcpkg-tdlib-deps-${{ runner.arch }}-v2
 
-      - name: Install TdLib via vcpkg
-        run: vcpkg install tdlib:x64-windows
+      - name: Install TdLib build deps via vcpkg
+        shell: pwsh
+        run: vcpkg install openssl:x64-windows zlib:x64-windows gperf:x64-windows
+
+      - name: Cache TdLib install
+        id: cache-tdlib
+        uses: actions/cache@v4
+        with:
+          path: C:/tdlib-install
+          key: tdlib-1.8.61-${{ runner.arch }}-msvc2022-v2
+
+      - name: Build TdLib from source
+        if: steps.cache-tdlib.outputs.cache-hit != 'true'
+        shell: pwsh
+        run: |
+          git clone --depth=1 --branch v1.8.61 https://github.com/tdlib/td.git C:/td
+          cmake -B C:/td/build -S C:/td `
+            -G "Ninja" `
+            -DCMAKE_BUILD_TYPE=Release `
+            -DCMAKE_INSTALL_PREFIX=C:/tdlib-install `
+            -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake `
+            -DVCPKG_TARGET_TRIPLET=x64-windows `
+            -DTD_ENABLE_LTO=OFF
+          cmake --build C:/td/build --target install -- -j 2
 
       - name: Cache MPV SDK
         id: cache-mpv
@@ -157,7 +179,8 @@ jobs:
             -DCMAKE_BUILD_TYPE=Release `
             -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake `
             -DVCPKG_TARGET_TRIPLET=x64-windows `
-            -DCMAKE_DISABLE_FIND_PACKAGE_PkgConfig=ON
+            -DCMAKE_DISABLE_FIND_PACKAGE_PkgConfig=ON `
+            -DTd_DIR=C:/tdlib-install/lib/cmake/Td
           cmake --build Plazma/build
 
       - name: Debug via tmate (on failure, ci-* branches and manual dispatch only)

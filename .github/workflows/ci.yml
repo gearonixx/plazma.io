@@ -39,12 +39,13 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/tdlib-install
-          key: tdlib-1.8.61-ubuntu-22.04-${{ runner.arch }}
+          key: tdlib-8fc2344-ubuntu-22.04-${{ runner.arch }}
 
       - name: Build TdLib
         if: steps.cache-tdlib.outputs.cache-hit != 'true'
         run: |
-          git clone --depth=1 --branch v1.8.61 https://github.com/tdlib/td.git ~/td
+          git clone https://github.com/tdlib/td.git ~/td
+          git -C ~/td checkout 8fc2344f3e3d
           cmake -B ~/td/build -S ~/td \
             -GNinja \
             -DCMAKE_BUILD_TYPE=Release \
@@ -135,13 +136,14 @@ jobs:
         uses: actions/cache@v4
         with:
           path: C:/tdlib-install
-          key: tdlib-1.8.61-${{ runner.arch }}-msvc2022-v2
+          key: tdlib-8fc2344-${{ runner.arch }}-msvc2022-v2
 
       - name: Build TdLib from source
         if: steps.cache-tdlib.outputs.cache-hit != 'true'
         shell: pwsh
         run: |
-          git clone --depth=1 --branch v1.8.61 https://github.com/tdlib/td.git C:/td
+          git clone https://github.com/tdlib/td.git C:/td
+          git -C C:/td checkout 8fc2344f3e3d
           cmake -B C:/td/build -S C:/td `
             -G "Ninja" `
             -DCMAKE_BUILD_TYPE=Release `

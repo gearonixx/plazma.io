@@ -58,7 +58,7 @@ endif()
 string(REPLACE "." ";" _ver_list ${PROJECT_VERSION})
 list(GET _ver_list 0 APP_MAJOR_VERSION)
 
-find_package(Qt6 REQUIRED COMPONENTS Core Widgets Qml Quick OpenGL LinguistTools)
+find_package(Qt6 REQUIRED COMPONENTS Core Widgets Qml Quick QuickControls2 OpenGL LinguistTools)
 
 qt_add_resources(RESOURCES src/resources.qrc)
 configure_file(${CMAKE_CURRENT_LIST_DIR}/version.h.in ${CMAKE_CURRENT_BINARY_DIR}/version.h)
@@ -88,6 +88,7 @@ target_link_libraries(plazma
     Qt6::Core
     Qt6::Qml
     Qt6::Quick
+    Qt6::QuickControls2
     Qt6::OpenGL
     Td::TdStatic
     ${MPV_LIBRARIES}

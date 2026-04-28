@@ -8,6 +8,7 @@
 #include <qcoreapplication.h>
 #include <qguiapplication.h>
 #include <QPushButton>
+#include <QQuickStyle>
 
 #include "client.h"
 
@@ -24,6 +25,8 @@ Q_DECL_EXPORT int main(int argc, char* argv[]) {
     SetConsoleCP(CP_UTF8);
     SetConsoleOutputCP(CP_UTF8);
 #endif
+
+    QQuickStyle::setStyle("Basic");
 
     PlazmaApplication app(argc, argv);
 

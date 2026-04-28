@@ -176,6 +176,9 @@ jobs:
       - name: Build Plazma
         env:
           PKG_CONFIG_PATH: /opt/homebrew/lib/pkgconfig
+          # pkg-config emits `-lmpv` without -L; brew's libdir isn't on
+          # macOS clang's default search path, so add it explicitly.
+          LDFLAGS: -L/opt/homebrew/lib
         run: |
           cmake -B Plazma/build -S Plazma \
             -GNinja \
@@ -292,6 +295,17 @@ jobs:
             -DCMAKE_DISABLE_FIND_PACKAGE_PkgConfig=ON `
             -DTd_DIR=C:/tdlib-install/lib/cmake/Td
           cmake --build Plazma/build
+          Push-Location Plazma/build
+          cpack -G ZIP
+          Pop-Location
+
+      - name: Upload Windows zip
+        uses: actions/upload-artifact@v4
+        with:
+          name: plazma-windows
+          path: Plazma/build/*.zip
+          if-no-files-found: error
+          retention-days: 14
 
       - name: Debug via tmate (on failure, ci-* branches and manual dispatch only)
         if: |
